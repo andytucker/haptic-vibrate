@@ -10,3 +10,11 @@
 
 # Local skills installer metadata
 skills-lock.json
+
+# PHP / QA tooling
+vendor/
+.phpcs-cache
+.phpunit.result.cache
+
+# Temporary packaging workspace
+dist/package/

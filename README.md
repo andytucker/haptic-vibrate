@@ -101,3 +101,29 @@ Enable **Desktop Debug Mode** in the sidebar to get feedback on desktop browsers
 ## License
 
 GPL v2 or later — see [LICENSE](LICENSE).
+
+---
+
+## Development
+
+This repository now includes WordPress-oriented project metadata and coding standards tooling:
+
+- `readme.txt` — WordPress-style plugin readme
+- `composer.json` — development dependencies for PHPCS/WPCS
+- `.phpcs.xml.dist` — WordPress Coding Standards configuration
+- `CHANGELOG.md` — release notes
+
+### Recommended local setup
+
+1. Install Composer dependencies.
+2. Run PHPCS before packaging or publishing.
+3. Update `readme.txt`, the plugin header version, and `CHANGELOG.md` for each release.
+4. Rebuild the plugin ZIP after release changes.
+
+### Release checklist
+
+- Verify activation, admin settings, frontend behavior, and uninstall in a real WordPress install.
+- Update `Version:` in `wp-haptic-vibrate.php`.
+- Update `Stable tag:` and changelog entries in `readme.txt`.
+- Update `CHANGELOG.md`.
+- Rebuild `dist/wp-haptic-vibrate.zip`.

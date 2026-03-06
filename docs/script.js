@@ -3,6 +3,8 @@
 
 	var Haptic = window.WPHapticCore || null;
 	var MAX_PULSE_WIDTH = 44;
+	// Keep this above the delayed synthetic click window so touch input on Android
+	// fires haptics immediately without double-triggering on the follow-up click.
 	var PRESS_DEBOUNCE_MS = 450;
 	var PRESETS = {
 		light: [10],
@@ -14,7 +16,6 @@
 		error: [300, 100, 300, 100, 300]
 	};
 	var audioContext = null;
-	var lastPressAt = 0;
 
 	function $(selector) {
 		return document.querySelector(selector);
@@ -137,7 +138,16 @@
 		status.textContent = message;
 	}
 
+	/**
+	 * Bind immediate touch/pen input while suppressing the follow-up click event
+	 * that many mobile browsers dispatch for the same interaction.
+	 *
+	 * @param {Element} element Target control.
+	 * @param {Function} handler Handler invoked for the interaction.
+	 */
 	function bindPressInteraction(element, handler) {
+		var lastPressAt = 0;
+
 		if (!element || typeof handler !== 'function') {
 			return;
 		}

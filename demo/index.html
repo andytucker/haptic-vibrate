@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>WP Haptic Vibrate — Add tactile feedback to WordPress UI</title>
+	<meta
+		name="description"
+		content="WP Haptic Vibrate adds mobile-friendly haptic feedback to buttons, links, forms, and custom UI elements using CSS selectors or a plugin class."
+	/>
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	<link
+		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+		rel="stylesheet"
+	/>
+	<link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+	<div class="demo-shell">
+		<header class="demo-header">
+			<div class="demo-header__inner">
+				<div>
+					<p class="demo-eyebrow">WordPress Plugin</p>
+					<h1 class="demo-title">WP Haptic Vibrate</h1>
+					<p class="demo-subtitle">
+						Add tactile feedback to buttons, links, forms, and custom interface elements with
+						a rule-based setup that feels native on mobile and stays testable on desktop.
+					</p>
+					<div class="demo-cta-row">
+						<a class="haptic-btn haptic-btn--primary" href="https://github.com/andytucker/wp-haptic-vibrate">View on GitHub</a>
+						<a class="haptic-btn haptic-btn--ghost" href="#live-demo">Try the live examples</a>
+					</div>
+				</div>
+				<div class="demo-hero-card haptic-card">
+					<div class="haptic-card__header">
+						<h2 class="haptic-card__title">Why it’s useful</h2>
+						<p class="haptic-card__desc">A tiny UX upgrade with surprisingly satisfying results.</p>
+					</div>
+					<div class="haptic-card__body">
+						<ul class="demo-checklist">
+							<li>Map any CSS selector to a haptic pattern</li>
+							<li>Use one plugin class across blocks, templates, and custom HTML</li>
+							<li>Pick from built-in presets or write custom millisecond patterns</li>
+							<li>Preview behavior on desktop with visual + audio fallback</li>
+						</ul>
+						<div class="demo-mini-preview">
+							<button class="haptic-btn haptic-btn--accent demo-mini-preview__button" data-demo-pattern="success">
+								Quick feel test
+							</button>
+							<p class="demo-mini-preview__hint">Uses the same client-side haptic core as the plugin.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<main class="demo-main">
+			<section class="demo-section">
+				<div class="demo-section__heading">
+					<p class="demo-eyebrow">Functionality overview</p>
+					<h2>Built for real UI interactions, not gimmicky buzz-buzz chaos</h2>
+					<p>
+						The plugin focuses on practical feedback patterns: confirmation taps, warning pulses,
+						button emphasis, and richer micro-interactions for mobile-first experiences.
+					</p>
+				</div>
+				<div class="demo-feature-grid">
+					<article class="haptic-card demo-feature-card">
+						<div class="haptic-card__body">
+							<span class="demo-feature-card__icon">🎯</span>
+							<h3>Selector rules</h3>
+							<p>Target individual elements or groups like <code>.cta-button</code>, <code>#checkout</code>, or <code>.menu a</code>.</p>
+						</div>
+					</article>
+					<article class="haptic-card demo-feature-card">
+						<div class="haptic-card__body">
+							<span class="demo-feature-card__icon">🏷️</span>
+							<h3>Plugin class</h3>
+							<p>Apply one configurable class in blocks, templates, or builders and let rules do the rest.</p>
+						</div>
+					</article>
+					<article class="haptic-card demo-feature-card">
+						<div class="haptic-card__body">
+							<span class="demo-feature-card__icon">⚡</span>
+							<h3>Presets + custom patterns</h3>
+							<p>Choose from taps, rumble, heartbeat, success, warning, error, or enter your own timing sequence.</p>
+						</div>
+					</article>
+					<article class="haptic-card demo-feature-card">
+						<div class="haptic-card__body">
+							<span class="demo-feature-card__icon">🖥️</span>
+							<h3>Desktop debug mode</h3>
+							<p>When vibration isn’t available, visual ripple and audio feedback make testing sane instead of mysterious.</p>
+						</div>
+					</article>
+				</div>
+			</section>
+
+			<section class="demo-section" id="live-demo">
+				<div class="demo-section__heading">
+					<p class="demo-eyebrow">Interactive examples</p>
+					<h2>See typical settings next to the result they produce</h2>
+					<p>
+						These controls are demo-only and do not save anything. They’re here to show how setup looks in the plugin and what each pattern feels like.
+					</p>
+				</div>
+
+				<div class="haptic-grid demo-live-grid">
+					<div class="haptic-col haptic-col--main demo-main-column">
+						<article class="haptic-card">
+							<div class="haptic-card__header">
+								<h3 class="haptic-card__title">Example rule builder</h3>
+								<p class="haptic-card__desc">This mirrors the admin flow: selector, pattern, trigger, then test.</p>
+							</div>
+							<div class="haptic-card__body demo-stack">
+								<div class="demo-rule-row">
+									<div class="haptic-field haptic-field--grow">
+										<label class="haptic-field__label" for="demo-selector">CSS Selector</label>
+										<input id="demo-selector" class="haptic-input" type="text" value=".cta-button" spellcheck="false" />
+									</div>
+									<div class="haptic-field haptic-field--preset">
+										<label class="haptic-field__label" for="demo-preset">Pattern Preset</label>
+										<select id="demo-preset" class="haptic-select">
+											<option value="success">Success</option>
+											<option value="notification">Notification</option>
+											<option value="double_tap">Double Tap</option>
+											<option value="heartbeat">Heartbeat</option>
+											<option value="warning">Warning</option>
+											<option value="error">Error</option>
+											<option value="custom">Custom…</option>
+										</select>
+									</div>
+								</div>
+
+								<div class="demo-rule-row">
+									<div class="haptic-field haptic-field--grow" id="demo-custom-wrap">
+										<label class="haptic-field__label" for="demo-custom-pattern">Custom Pattern (ms)</label>
+										<input id="demo-custom-pattern" class="haptic-input" type="text" value="200,100,200,100,400" spellcheck="false" />
+									</div>
+									<div class="haptic-field haptic-field--trigger">
+										<label class="haptic-field__label" for="demo-trigger">Trigger Event</label>
+										<select id="demo-trigger" class="haptic-select">
+											<option value="click">Click / Tap</option>
+											<option value="mousedown">Mouse Down</option>
+											<option value="touchstart">Touch Start</option>
+										</select>
+									</div>
+									<div class="haptic-field haptic-field--test">
+										<label class="haptic-field__label haptic-invisible" aria-hidden="true">Test</label>
+										<button class="haptic-btn haptic-btn--ghost demo-test-btn" type="button" data-demo-source="rule-builder">Test</button>
+									</div>
+								</div>
+
+								<div class="demo-output-panel">
+									<div>
+										<p class="demo-output-panel__label">Result preview</p>
+										<button class="demo-result-target" type="button" id="demo-rule-target">.cta-button example</button>
+									</div>
+									<div>
+										<p class="demo-output-panel__label">Pattern timeline</p>
+										<div class="demo-pattern-badge" id="demo-pattern-badge" aria-hidden="true"></div>
+									</div>
+								</div>
+							</div>
+						</article>
+
+						<article class="haptic-card">
+							<div class="haptic-card__header">
+								<h3 class="haptic-card__title">Plugin class example</h3>
+								<p class="haptic-card__desc">Useful when you want a reusable class across blocks or templates.</p>
+							</div>
+							<div class="haptic-card__body demo-stack">
+								<div class="demo-rule-row demo-rule-row--align-end">
+									<div class="haptic-field haptic-field--grow">
+										<label class="haptic-field__label" for="demo-plugin-class">Class name</label>
+										<div class="haptic-field__input-wrap haptic-field__input-wrap--prefix">
+											<span class="haptic-field__prefix">.</span>
+											<input id="demo-plugin-class" class="haptic-input" type="text" value="haptic-vibrate" spellcheck="false" />
+										</div>
+									</div>
+									<div class="haptic-field haptic-field--shrink">
+										<label class="haptic-toggle haptic-toggle--small demo-toggle-wrap">
+											<input id="demo-use-plugin-class" type="checkbox" checked />
+											<span class="haptic-toggle__track" aria-hidden="true"></span>
+											<span class="haptic-toggle__label">Use Plugin Class</span>
+										</label>
+									</div>
+									<div class="haptic-field haptic-field--test">
+										<label class="haptic-field__label haptic-invisible" aria-hidden="true">Test</label>
+										<button class="haptic-btn haptic-btn--ghost demo-test-btn" type="button" data-demo-source="plugin-class">Test</button>
+									</div>
+								</div>
+								<div class="demo-chip-row">
+									<span class="demo-class-chip" id="demo-class-chip">button class=&quot;<span id="demo-class-chip-name">haptic-vibrate</span>&quot;</span>
+									<button class="demo-result-target demo-result-target--secondary" type="button" id="demo-plugin-target">Reusable class target</button>
+								</div>
+							</div>
+						</article>
+					</div>
+
+					<aside class="haptic-col haptic-col--sidebar demo-sidebar-column">
+						<article class="haptic-card haptic-card--compact">
+							<div class="haptic-card__header">
+								<h3 class="haptic-card__title">Desktop Debug Mode</h3>
+							</div>
+							<div class="haptic-card__body demo-stack">
+								<p class="haptic-field__help">
+									If mobile haptics are unavailable, the plugin can fall back to visual ripple and audio feedback for testing.
+								</p>
+								<label class="haptic-toggle" for="demo-debug-mode">
+									<input id="demo-debug-mode" type="checkbox" checked />
+									<span class="haptic-toggle__track" aria-hidden="true"></span>
+									<span class="haptic-toggle__label">Enable debug mode</span>
+								</label>
+								<div class="demo-inline-action">
+									<button class="haptic-btn haptic-btn--accent demo-test-btn" type="button" data-demo-source="debug-mode">Test</button>
+									<div class="demo-debug-preview" id="demo-debug-preview">
+										<div class="demo-debug-preview__pulse"></div>
+										<span>Visual ripple preview</span>
+									</div>
+								</div>
+							</div>
+						</article>
+
+						<article class="haptic-card haptic-card--compact">
+							<div class="haptic-card__header">
+								<h3 class="haptic-card__title">Popular presets</h3>
+							</div>
+							<div class="haptic-card__body demo-stack">
+								<div class="demo-preset-list">
+									<button class="demo-preset-pill" type="button" data-demo-pattern="light">Light</button>
+									<button class="demo-preset-pill" type="button" data-demo-pattern="double_tap">Double Tap</button>
+									<button class="demo-preset-pill" type="button" data-demo-pattern="heartbeat">Heartbeat</button>
+									<button class="demo-preset-pill" type="button" data-demo-pattern="success">Success</button>
+									<button class="demo-preset-pill" type="button" data-demo-pattern="warning">Warning</button>
+									<button class="demo-preset-pill" type="button" data-demo-pattern="error">Error</button>
+								</div>
+								<p class="haptic-field__help">Tap any preset to try it instantly.</p>
+							</div>
+						</article>
+
+						<article class="haptic-card haptic-card--compact">
+							<div class="haptic-card__header">
+								<h3 class="haptic-card__title">Live status</h3>
+							</div>
+							<div class="haptic-card__body">
+								<div class="demo-status" id="demo-status" role="status" aria-live="polite">
+									Ready to test a pattern.
+								</div>
+							</div>
+						</article>
+					</aside>
+				</div>
+			</section>
+
+			<section class="demo-section demo-section--split">
+				<div class="haptic-card">
+					<div class="haptic-card__header">
+						<h3 class="haptic-card__title">How setup usually works</h3>
+						<p class="haptic-card__desc">Short version: pick targets, choose feel, save, done.</p>
+					</div>
+					<div class="haptic-card__body">
+						<ol class="demo-steps">
+							<li><strong>Add a rule</strong> and enter a selector like <code>.buy-now</code> or <code>#checkout</code>.</li>
+							<li><strong>Choose a preset</strong> or define a custom timing sequence in milliseconds.</li>
+							<li><strong>Select the trigger</strong> such as click/tap, mouse down, or touch start.</li>
+							<li><strong>Optionally enable the plugin class</strong> for reusable markup patterns.</li>
+							<li><strong>Use Desktop Debug Mode</strong> while testing on browsers without mobile haptics.</li>
+						</ol>
+					</div>
+				</div>
+				<div class="haptic-card demo-screenshot-card">
+					<div class="haptic-card__header">
+						<h3 class="haptic-card__title">Settings screenshot placeholder</h3>
+						<p class="haptic-card__desc">Drop in your real admin screenshot later and this section is ready.</p>
+					</div>
+					<div class="haptic-card__body">
+						<div class="demo-screenshot-placeholder">
+							<div class="demo-screenshot-placeholder__frame">
+								<span>Admin settings screenshot coming soon</span>
+							</div>
+							<p>
+								When you send the screenshot later, I can drop it into this block and tune spacing so it looks perfectly at home.
+							</p>
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
+
+	<script src="../assets/js/haptic-core.js"></script>
+	<script src="./script.js"></script>
+</body>
+</html>

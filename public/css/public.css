@@ -1,0 +1,33 @@
+/* ==========================================================================
+   WP Haptic Vibrate – Public Styles
+   Minimal styles for debug-mode visual feedback only.
+   ========================================================================== */
+
+/**
+ * Debug ripple effect.
+ *
+ * Applied to the interacted element when the Vibration API is unavailable
+ * and desktop debug mode is enabled. Provides a quick visual pulse
+ * so developers can confirm that the haptic event fired correctly.
+ */
+.haptic-debug-ripple {
+	position: relative;
+	overflow: visible !important;
+}
+
+.haptic-debug-ripple::after {
+	content: '';
+	position: absolute;
+	inset: -6px;
+	border-radius: inherit;
+	border: 3px solid #06b6d4;
+	opacity: 1;
+	animation: haptic-debug-pulse 0.4s ease-out forwards;
+	pointer-events: none;
+	z-index: 9999;
+}
+
+@keyframes haptic-debug-pulse {
+	0%   { transform: scale(1);    opacity: 1; }
+	100% { transform: scale(1.25); opacity: 0; }
+}

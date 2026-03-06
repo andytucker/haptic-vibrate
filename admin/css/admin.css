@@ -1,0 +1,602 @@
+/* ==========================================================================
+   WP Haptic Vibrate – Admin Styles
+   Modern, accessible, card-based UI (works in WP 5.9+)
+   ========================================================================== */
+
+/* ── Custom Properties ────────────────────────────────────────────────── */
+:root {
+	--haptic-primary:      #4f46e5;
+	--haptic-primary-dark: #3730a3;
+	--haptic-accent:       #06b6d4;
+	--haptic-accent-dark:  #0284c7;
+	--haptic-danger:       #ef4444;
+	--haptic-danger-dark:  #b91c1c;
+	--haptic-success:      #22c55e;
+	--haptic-text:         #1e1e2f;
+	--haptic-text-muted:   #6b7280;
+	--haptic-border:       #e5e7eb;
+	--haptic-surface:      #ffffff;
+	--haptic-bg:           #f4f5f7;
+	--haptic-shadow:       0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+	--haptic-shadow-lg:    0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+	--haptic-radius:       10px;
+	--haptic-radius-sm:    6px;
+	--haptic-transition:   0.2s ease;
+}
+
+/* ── Wrapper ──────────────────────────────────────────────────────────── */
+.haptic-wrap {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 16px 60px;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	color: var(--haptic-text);
+}
+
+/* ── Page Header ──────────────────────────────────────────────────────── */
+.haptic-header {
+	background: linear-gradient(135deg, var(--haptic-primary) 0%, var(--haptic-accent) 100%);
+	border-radius: var(--haptic-radius);
+	margin: 20px 0 24px;
+	padding: 28px 32px;
+	color: #fff;
+	box-shadow: var(--haptic-shadow-lg);
+}
+
+.haptic-header__inner {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+.haptic-header__icon {
+	font-size: 44px;
+	line-height: 1;
+	flex-shrink: 0;
+}
+
+.haptic-header__title {
+	margin: 0 0 4px;
+	font-size: 1.75rem;
+	font-weight: 700;
+	color: #fff;
+}
+
+.haptic-header__subtitle {
+	margin: 0;
+	font-size: 0.95rem;
+	opacity: 0.85;
+}
+
+/* ── Grid layout ──────────────────────────────────────────────────────── */
+.haptic-grid {
+	display: grid;
+	grid-template-columns: 1fr 340px;
+	gap: 24px;
+	align-items: start;
+}
+
+@media (max-width: 900px) {
+	.haptic-grid {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ── Cards ────────────────────────────────────────────────────────────── */
+.haptic-card {
+	background: var(--haptic-surface);
+	border: 1px solid var(--haptic-border);
+	border-radius: var(--haptic-radius);
+	box-shadow: var(--haptic-shadow);
+	overflow: hidden;
+}
+
+.haptic-card--compact .haptic-card__body {
+	padding: 16px 20px;
+}
+
+.haptic-card--save {
+	border-color: var(--haptic-primary);
+}
+
+.haptic-card__header {
+	padding: 16px 24px;
+	border-bottom: 1px solid var(--haptic-border);
+	background: var(--haptic-bg);
+}
+
+.haptic-card--compact .haptic-card__header {
+	padding: 12px 20px;
+}
+
+.haptic-card__title {
+	margin: 0 0 4px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--haptic-text);
+}
+
+.haptic-card__title .dashicons {
+	color: var(--haptic-primary);
+	font-size: 18px;
+	width: 18px;
+	height: 18px;
+}
+
+.haptic-card__desc {
+	margin: 0;
+	font-size: 0.83rem;
+	color: var(--haptic-text-muted);
+	line-height: 1.5;
+}
+
+.haptic-card__body {
+	padding: 24px;
+}
+
+/* ── Fields ───────────────────────────────────────────────────────────── */
+.haptic-field {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.haptic-field--grow {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.haptic-field--shrink {
+	flex: 0 0 auto;
+}
+
+.haptic-field--preset  { flex: 0 0 190px; }
+.haptic-field--custom  { flex: 1 1 160px; }
+.haptic-field--trigger { flex: 0 0 150px; }
+.haptic-field--test    { flex: 0 0 42px; }
+
+.haptic-field__label {
+	font-size: 0.8rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: var(--haptic-text-muted);
+}
+
+.haptic-field__help {
+	font-size: 0.83rem;
+	color: var(--haptic-text-muted);
+	line-height: 1.5;
+	margin: 0 0 12px;
+}
+
+.haptic-invisible {
+	opacity: 0;
+	pointer-events: none;
+}
+
+.haptic-hidden {
+	display: none !important;
+}
+
+/* ── Inputs & Selects ─────────────────────────────────────────────────── */
+.haptic-input,
+.haptic-select {
+	width: 100%;
+	padding: 8px 10px;
+	font-size: 0.88rem;
+	border: 1px solid var(--haptic-border);
+	border-radius: var(--haptic-radius-sm);
+	background: var(--haptic-surface);
+	color: var(--haptic-text);
+	transition: border-color var(--haptic-transition), box-shadow var(--haptic-transition);
+	box-sizing: border-box;
+}
+
+.haptic-input:focus,
+.haptic-select:focus {
+	outline: none;
+	border-color: var(--haptic-primary);
+	box-shadow: 0 0 0 3px rgb(79 70 229 / 0.15);
+}
+
+.haptic-field__input-wrap--prefix {
+	display: flex;
+	align-items: center;
+}
+
+.haptic-field__prefix {
+	padding: 8px 10px;
+	background: var(--haptic-bg);
+	border: 1px solid var(--haptic-border);
+	border-right: none;
+	border-radius: var(--haptic-radius-sm) 0 0 var(--haptic-radius-sm);
+	font-size: 0.95rem;
+	font-weight: 700;
+	color: var(--haptic-text-muted);
+	line-height: 1;
+}
+
+.haptic-field__input-wrap--prefix .haptic-input {
+	border-radius: 0 var(--haptic-radius-sm) var(--haptic-radius-sm) 0;
+}
+
+/* ── Toggle Switch ────────────────────────────────────────────────────── */
+.haptic-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+	user-select: none;
+}
+
+.haptic-toggle input[type="checkbox"] {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.haptic-toggle__track {
+	display: inline-block;
+	width: 44px;
+	height: 24px;
+	background: #d1d5db;
+	border-radius: 999px;
+	position: relative;
+	transition: background var(--haptic-transition);
+	flex-shrink: 0;
+}
+
+.haptic-toggle__track::after {
+	content: "";
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	width: 18px;
+	height: 18px;
+	background: #fff;
+	border-radius: 50%;
+	transition: transform var(--haptic-transition);
+	box-shadow: 0 1px 3px rgb(0 0 0 / 0.2);
+}
+
+.haptic-toggle input:checked + .haptic-toggle__track {
+	background: var(--haptic-primary);
+}
+
+.haptic-toggle input:checked + .haptic-toggle__track::after {
+	transform: translateX(20px);
+}
+
+.haptic-toggle input:focus-visible + .haptic-toggle__track {
+	box-shadow: 0 0 0 3px rgb(79 70 229 / 0.25);
+}
+
+.haptic-toggle__label {
+	font-size: 0.9rem;
+	font-weight: 500;
+}
+
+.haptic-toggle--small .haptic-toggle__track {
+	width: 36px;
+	height: 20px;
+}
+
+.haptic-toggle--small .haptic-toggle__track::after {
+	width: 14px;
+	height: 14px;
+}
+
+.haptic-toggle--small input:checked + .haptic-toggle__track::after {
+	transform: translateX(16px);
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────── */
+.haptic-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 9px 18px;
+	font-size: 0.875rem;
+	font-weight: 600;
+	border-radius: var(--haptic-radius-sm);
+	border: 2px solid transparent;
+	cursor: pointer;
+	transition:
+		background var(--haptic-transition),
+		border-color var(--haptic-transition),
+		box-shadow var(--haptic-transition),
+		transform 0.1s ease;
+	text-decoration: none;
+}
+
+.haptic-btn:active {
+	transform: translateY(1px);
+}
+
+.haptic-btn:focus-visible {
+	outline: 3px solid var(--haptic-primary);
+	outline-offset: 2px;
+}
+
+.haptic-btn--primary {
+	background: var(--haptic-primary);
+	color: #fff;
+}
+
+.haptic-btn--primary:hover {
+	background: var(--haptic-primary-dark);
+	color: #fff;
+}
+
+.haptic-btn--accent {
+	background: var(--haptic-accent);
+	color: #fff;
+}
+
+.haptic-btn--accent:hover {
+	background: var(--haptic-accent-dark);
+	color: #fff;
+}
+
+.haptic-btn--ghost {
+	background: transparent;
+	border-color: var(--haptic-border);
+	color: var(--haptic-text-muted);
+}
+
+.haptic-btn--ghost:hover {
+	border-color: var(--haptic-primary);
+	color: var(--haptic-primary);
+	background: rgb(79 70 229 / 0.05);
+}
+
+.haptic-btn--danger {
+	background: transparent;
+	border-color: var(--haptic-border);
+	color: var(--haptic-text-muted);
+}
+
+.haptic-btn--danger:hover {
+	background: rgb(239 68 68 / 0.08);
+	border-color: var(--haptic-danger);
+	color: var(--haptic-danger);
+}
+
+.haptic-btn--icon {
+	padding: 8px;
+	border-radius: var(--haptic-radius-sm);
+}
+
+.haptic-btn--icon .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.haptic-btn--full {
+	width: 100%;
+}
+
+/* Save button override */
+.haptic-save-btn.button-primary {
+	background: var(--haptic-primary) !important;
+	border-color: var(--haptic-primary) !important;
+	box-shadow: none !important;
+	width: 100%;
+	text-align: center;
+	display: flex;
+	justify-content: center;
+	height: auto;
+	padding: 10px 18px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	border-radius: var(--haptic-radius-sm) !important;
+}
+
+.haptic-save-btn.button-primary:hover {
+	background: var(--haptic-primary-dark) !important;
+	border-color: var(--haptic-primary-dark) !important;
+}
+
+/* ── Rules List ───────────────────────────────────────────────────────── */
+.haptic-rules-list {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.haptic-rules-empty {
+	text-align: center;
+	padding: 40px 20px;
+	color: var(--haptic-text-muted);
+}
+
+.haptic-rules-empty__icon {
+	font-size: 2.5rem;
+	display: block;
+	margin-bottom: 8px;
+}
+
+.haptic-rules-empty p {
+	margin: 0;
+	font-size: 0.9rem;
+}
+
+.haptic-rules-actions {
+	margin-top: 16px;
+	display: flex;
+	justify-content: flex-start;
+}
+
+/* ── Single Rule Row ──────────────────────────────────────────────────── */
+.haptic-rule {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	background: var(--haptic-bg);
+	border: 1px solid var(--haptic-border);
+	border-radius: var(--haptic-radius-sm);
+	padding: 14px 12px;
+	transition: box-shadow var(--haptic-transition), border-color var(--haptic-transition);
+	position: relative;
+}
+
+.haptic-rule:hover {
+	border-color: #c4c7ce;
+	box-shadow: var(--haptic-shadow);
+}
+
+.haptic-rule--dragging {
+	opacity: 0.5;
+	border-color: var(--haptic-primary);
+}
+
+.haptic-rule__handle {
+	cursor: grab;
+	color: var(--haptic-text-muted);
+	padding-top: 28px; /* align with inputs */
+	flex-shrink: 0;
+	opacity: 0.4;
+	transition: opacity var(--haptic-transition);
+}
+
+.haptic-rule:hover .haptic-rule__handle {
+	opacity: 0.9;
+}
+
+.haptic-rule__handle:active {
+	cursor: grabbing;
+}
+
+.haptic-rule__fields {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.haptic-rule__row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: flex-end;
+}
+
+.haptic-rule__row--selector {
+	align-items: center;
+}
+
+.haptic-rule__remove {
+	flex-shrink: 0;
+	padding-top: 22px;
+}
+
+/* ── Pattern Badge (inline) ───────────────────────────────────────────── */
+.haptic-pattern-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	margin-top: 4px;
+	flex-wrap: wrap;
+}
+
+.haptic-pattern-badge__pulse {
+	display: inline-block;
+	height: 14px;
+	background: var(--haptic-primary);
+	border-radius: 2px;
+	opacity: 0.7;
+	min-width: 4px;
+}
+
+/* ── Debug preview ────────────────────────────────────────────────────── */
+.haptic-debug-preview {
+	display: none;
+	margin-top: 16px;
+	padding: 14px;
+	background: var(--haptic-bg);
+	border-radius: var(--haptic-radius-sm);
+	border: 1px dashed var(--haptic-accent);
+}
+
+.haptic-debug-preview.is-visible {
+	display: block;
+}
+
+.haptic-ripple-demo {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	font-size: 0.83rem;
+	color: var(--haptic-text-muted);
+}
+
+.haptic-ripple-demo__circle {
+	width: 36px;
+	height: 36px;
+	border-radius: 50%;
+	background: var(--haptic-accent);
+	opacity: 0.5;
+	flex-shrink: 0;
+	animation: haptic-ripple-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes haptic-ripple-pulse {
+	0%, 100% { transform: scale(1);   opacity: 0.5; }
+	50%       { transform: scale(1.4); opacity: 0.25; }
+}
+
+/* ── Tester status ────────────────────────────────────────────────────── */
+.haptic-tester-status {
+	margin-top: 10px;
+	font-size: 0.82rem;
+	min-height: 20px;
+	padding: 0 4px;
+	transition: opacity var(--haptic-transition);
+}
+
+.haptic-tester-status.is-success {
+	color: var(--haptic-success);
+}
+
+.haptic-tester-status.is-error {
+	color: var(--haptic-danger);
+}
+
+.haptic-tester-status.is-info {
+	color: var(--haptic-accent-dark);
+}
+
+/* ── Sortable placeholder ─────────────────────────────────────────────── */
+.haptic-rule-placeholder {
+	border: 2px dashed var(--haptic-primary);
+	border-radius: var(--haptic-radius-sm);
+	background: rgb(79 70 229 / 0.04);
+	height: 60px;
+}
+
+/* ── Spinner on test button ───────────────────────────────────────────── */
+.haptic-btn--loading .dashicons {
+	animation: haptic-spin 0.8s linear infinite;
+}
+
+@keyframes haptic-spin {
+	from { transform: rotate(0deg); }
+	to   { transform: rotate(360deg); }
+}
+
+/* ── Responsive tweaks ────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+	.haptic-rule__row {
+		flex-direction: column;
+	}
+	.haptic-field--preset,
+	.haptic-field--trigger { flex: 1 1 100%; }
+}

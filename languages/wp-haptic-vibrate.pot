@@ -1,0 +1,183 @@
+# Copyright (C) 2024 Andy Tucker
+# This file is distributed under the same license as the WP Haptic Vibrate plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Haptic Vibrate 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/andytucker/wp-haptic-vibrate/issues\n"
+"POT-Creation-Date: 2024-01-01T00:00:00+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: WP-CLI 2.8.0\n"
+"X-Domain: wp-haptic-vibrate\n"
+
+#. Plugin Name of the plugin
+msgid "WP Haptic Vibrate"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://github.com/andytucker/wp-haptic-vibrate"
+msgstr ""
+
+#. Description of the plugin
+msgid "Enable mobile haptic vibration feedback on any element via CSS class selectors. Includes an admin pattern builder, presets, and a desktop debug mode with visual/audio feedback."
+msgstr ""
+
+#. Author of the plugin
+msgid "Andy Tucker"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "WP Haptic Vibrate"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Haptic Vibrate"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "e.g. 200,100,200"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Add Rule"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Remove"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Test Pattern"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Vibration API not supported in this browser."
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Remove this rule?"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Unauthorised."
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Click / Tap"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Mouse Down"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Touch Start"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "CSS Selector"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Also target the plugin class"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Use Plugin Class"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Pattern Preset"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Custom Pattern (ms)"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Trigger Event"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Test this pattern"
+msgstr ""
+
+#: admin/class-admin.php
+msgid "Drag to reorder"
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Add haptic vibration feedback to any element on your site."
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Vibration Rules"
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Map CSS selectors or the plugin class to vibration patterns. Each rule fires when the user interacts with a matching element."
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "No rules yet. Click \"Add Rule\" to get started."
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Add Rule"
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Plugin Class"
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Add this CSS class to any HTML element to apply the matching rule that has \"Use Plugin Class\" enabled."
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Class name"
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Desktop Debug Mode"
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "When enabled, desktop browsers that don't support the Vibration API receive a visual ripple effect and a short audio beep instead. Useful for testing without a mobile device."
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Enable debug mode"
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Visual ripple preview"
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Pattern Tester"
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Quickly preview any pattern on this device."
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Preset"
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Custom pattern (ms, comma-separated)"
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Test Pattern"
+msgstr ""
+
+#: admin/partials/admin-display.php
+msgid "Save Settings"
+msgstr ""

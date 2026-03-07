@@ -13,18 +13,16 @@
 (function ($) {
 	'use strict';
 
-	// ── Constants ─────────────────────────────────────────────────────────
-	var MAX_PULSE_WIDTH  = 40;   // px, max bar width for pattern visualiser
-	var MAX_PATTERN_MS   = 1000; // reference duration for scaling
+	var MAX_PULSE_WIDTH  = 40;
+	var MAX_PATTERN_MS   = 1000;
 	var Haptic = window.WPHapticCore || null;
 
-	// ── Audio context (lazy) ───────────────────────────────────────────────
 	var _audioCtx = null;
 	function getAudioContext() {
 		if ( ! _audioCtx ) {
 			try {
 				_audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-			} catch (e) { /* not available */ }
+			} catch (e) {}
 		}
 		return _audioCtx;
 	}
@@ -43,7 +41,6 @@
 
 		pattern.forEach( function ( ms, idx ) {
 			if ( idx % 2 === 0 ) {
-				// Vibrate segment → play a beep.
 				var osc  = ctx.createOscillator();
 				var gain = ctx.createGain();
 				osc.connect( gain );
@@ -102,8 +99,6 @@
 		}
 	}
 
-	// ── Pattern visualiser (badge) ─────────────────────────────────────────
-
 	/**
 	 * Render a tiny bar-chart representation of a vibration pattern.
 	 *
@@ -119,18 +114,16 @@
 			var $bar    = $( '<span class="haptic-pattern-badge__pulse"></span>' );
 			$bar.css( { width: width + 'px' } );
 			if ( idx % 2 !== 0 ) {
-				$bar.css( { background: 'transparent', border: 'none' } ); // pause
+				$bar.css( { background: 'transparent', border: 'none' } );
 			}
 			$badge.append( $bar );
 		} );
 		return $badge;
 	}
 
-	// ── Rule management ────────────────────────────────────────────────────
-
 	var $rulesList    = $( '#haptic-rules-list' );
 	var $emptyNotice  = $( '#haptic-rules-empty' );
-	var ruleIndex     = 0; // monotonic counter for unique array indices
+	var ruleIndex     = 0;
 
 	/**
 	 * Get the highest existing numeric index from the rendered rules so we can
@@ -157,7 +150,6 @@
 	 * @param {jQuery} $row The rule row element.
 	 */
 	function bindRuleRow( $row ) {
-		// Preset → show/hide custom field + update badge.
 		$row.on( 'change', '.haptic-rule__preset', function () {
 			var $select  = $( this );
 			var preset   = $select.val();
@@ -166,12 +158,10 @@
 			refreshRowBadge( $row );
 		} );
 
-		// Custom pattern text → update badge.
 		$row.on( 'input', '.haptic-rule__custom-pattern', function () {
 			refreshRowBadge( $row );
 		} );
 
-		// Remove button.
 		$row.on( 'click', '.haptic-rule__remove-btn', function () {
 			if ( window.confirm( wpHapticAdmin.i18n.confirmRemove ) ) {
 				$row.remove();
@@ -179,7 +169,6 @@
 			}
 		} );
 
-		// Inline test button.
 		$row.on( 'click', '.haptic-rule__test-btn', function () {
 			var pattern = resolveRowPattern( $row );
 			var debugMode = $( '#haptic-debug-mode' ).is( ':checked' );
@@ -241,7 +230,6 @@
 	/** Add a fresh rule row from the template. */
 	function addRuleRow() {
 		var template = $( '#haptic-rule-template' ).html();
-		// Replace placeholder index with real monotonic index.
 		var html = template.replace( /\{\{INDEX\}\}/g, ruleIndex );
 		var $row = $( html );
 		ruleIndex++;
@@ -251,12 +239,9 @@
 		bindRuleRow( $row );
 		refreshRowBadge( $row );
 
-		// Scroll into view & focus first input.
 		$row[0].scrollIntoView( { behavior: 'smooth', block: 'nearest' } );
 		$row.find( '.haptic-rule__selector' ).focus();
 	}
-
-	// ── Init existing rows ─────────────────────────────────────────────────
 
 	function initExistingRows() {
 		$rulesList.find( '.haptic-rule' ).each( function () {
@@ -265,13 +250,9 @@
 		} );
 	}
 
-	// ── Drag-and-drop reorder ──────────────────────────────────────────────
-	// Lightweight vanilla HTML5 drag-and-drop so we don't need jQuery UI.
-
 	var dragSrc = null;
 
 	function initDragAndDrop() {
-		// We use event delegation on the list so newly added rows are covered.
 		$rulesList[0].addEventListener( 'dragstart', function ( e ) {
 			var row = e.target.closest( '.haptic-rule' );
 			if ( ! row ) { return; }
@@ -303,13 +284,10 @@
 			if ( dragSrc ) {
 				dragSrc.classList.remove( 'haptic-rule--dragging' );
 				dragSrc = null;
-				// Re-index the hidden data-index attributes (for debugging only –
-				// PHP re-indexes via sequential array keys on save).
 				reindexRows();
 			}
 		} );
 
-		// Make each handle the draggable trigger.
 		$rulesList.on( 'mousedown', '.haptic-rule__handle', function () {
 			var $row = $( this ).closest( '.haptic-rule' );
 			$row.attr( 'draggable', 'true' );
@@ -327,25 +305,18 @@
 		} );
 	}
 
-	// ── Add-rule button ────────────────────────────────────────────────────
-
 	$( '#haptic-add-rule' ).on( 'click', function () {
 		addRuleRow();
 	} );
-
-	// ── Debug-mode toggle ──────────────────────────────────────────────────
 
 	$( '#haptic-debug-mode' ).on( 'change', function () {
 		var $preview = $( '#haptic-debug-preview' );
 		$preview.toggleClass( 'is-visible', this.checked );
 	} );
 
-	// Initialise preview visibility on page load.
 	if ( $( '#haptic-debug-mode' ).is( ':checked' ) ) {
 		$( '#haptic-debug-preview' ).addClass( 'is-visible' );
 	}
-
-	// ── Standalone Pattern Tester ──────────────────────────────────────────
 
 	$( '#haptic-tester-preset' ).on( 'change', function () {
 		var $customWrap = $( '#haptic-tester-custom-wrap' );
@@ -392,13 +363,10 @@
 			$btn.removeClass( 'haptic-btn--loading' );
 		}, Math.max( total, 500 ) );
 
-		// Auto-clear status.
 		setTimeout( function () {
 			$status.removeClass( 'is-success is-error is-info' ).text( '' );
 		}, 5000 );
 	} );
-
-	// ── Boot ───────────────────────────────────────────────────────────────
 
 	refreshRuleIndex();
 	initExistingRows();

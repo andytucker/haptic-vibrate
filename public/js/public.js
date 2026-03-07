@@ -11,20 +11,18 @@
 (function () {
 	'use strict';
 
-	// Safety guard in case the localized object wasn't output.
 	if ( typeof wpHapticPublic === 'undefined' ) { return; }
 
 	var rules     = wpHapticPublic.rules     || [];
 	var debugMode = wpHapticPublic.debugMode || false;
 	var Haptic = window.WPHapticCore || null;
 
-	// ── AudioContext (lazy, for debug mode) ──────────────────────────────
 	var _audioCtx = null;
 	function getAudioContext() {
 		if ( ! _audioCtx ) {
 			try {
 				_audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-			} catch (e) { /* unavailable */ }
+			} catch (e) {}
 		}
 		return _audioCtx;
 	}
@@ -94,7 +92,6 @@
 		}
 	}
 
-	// ── Attach event listeners ──────────────────────────────────────────
 	rules.forEach( function ( rule ) {
 		if ( ! rule.selectors || rule.selectors.length === 0 ) { return; }
 
@@ -102,10 +99,7 @@
 		var pattern  = rule.pattern  || [ 200 ];
 		var trigger  = rule.trigger  || 'click';
 
-		// Use event delegation from document.body so dynamically inserted
-		// elements are also covered.
 		document.body.addEventListener( trigger, function ( e ) {
-			// Walk up the DOM to see if the event target matches the selector.
 			var el = e.target;
 			while ( el && el !== document.body ) {
 				try {
@@ -113,7 +107,7 @@
 						triggerHaptic( el, pattern );
 						return;
 					}
-				} catch (err) { /* invalid selector */ }
+				} catch (err) {}
 				el = el.parentElement;
 			}
 		}, { passive: true } );

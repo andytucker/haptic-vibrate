@@ -20,11 +20,8 @@ class WP_Haptic_Vibrate_Deactivator {
 	/**
 	 * Deactivate the plugin.
 	 *
-	 * Settings are intentionally kept so the user does not lose their configuration.
-	 *
 	 * @since 1.0.0
 	 */
 	public static function deactivate() {
-		// Intentionally left blank – settings are preserved on deactivation.
 	}
 }

@@ -17,6 +17,14 @@
 	var debugMode = wpHapticPublic.debugMode || false;
 	var Haptic = window.WPHapticCore || null;
 
+	function getEffectivePattern( pattern ) {
+		if ( Haptic && typeof Haptic.normalizePattern === 'function' ) {
+			return Haptic.normalizePattern( pattern );
+		}
+
+		return Array.isArray( pattern ) ? pattern.slice() : [ pattern ];
+	}
+
 	var _audioCtx = null;
 	function getAudioContext() {
 		if ( ! _audioCtx ) {
@@ -80,15 +88,17 @@
 	 * @param {number[]} pattern The vibration pattern.
 	 */
 	function triggerHaptic( el, pattern ) {
-		if ( ! pattern || pattern.length === 0 ) { return; }
+		var effectivePattern = getEffectivePattern( pattern );
 
-		if ( Haptic && Haptic.vibrate( pattern ) ) {
+		if ( ! effectivePattern || effectivePattern.length === 0 ) { return; }
+
+		if ( Haptic && Haptic.vibrate( effectivePattern ) ) {
 			return;
 		}
 
 		if ( debugMode ) {
-			playDebugAudio( pattern );
-			playDebugVisual( el, pattern );
+			playDebugAudio( effectivePattern );
+			playDebugVisual( el, effectivePattern );
 		}
 	}
 

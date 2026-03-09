@@ -55,6 +55,30 @@
 		return PRESETS[name] ? PRESETS[name].slice() : [200];
 	}
 
+	function getEffectivePattern(pattern) {
+		if (Haptic && typeof Haptic.normalizePattern === 'function') {
+			return Haptic.normalizePattern(pattern);
+		}
+
+		return Array.isArray(pattern) ? pattern.slice() : [pattern];
+	}
+
+	function formatPatternText(pattern) {
+		return '[' + pattern.join(', ') + '] ms';
+	}
+
+	function patternsMatch(first, second) {
+		return first.join(',') === second.join(',');
+	}
+
+	function describeEffectivePattern(rawPattern, effectivePattern) {
+		if (patternsMatch(rawPattern, effectivePattern)) {
+			return formatPatternText(effectivePattern);
+		}
+
+		return formatPatternText(effectivePattern) + ' (normalized from ' + formatPatternText(rawPattern) + ')';
+	}
+
 	function resolveCurrentRulePattern() {
 		var preset = $('#demo-preset').value;
 		if (preset === 'custom') {
@@ -210,17 +234,19 @@
 	}
 
 	function triggerPattern(pattern, options) {
+		var effectivePattern = getEffectivePattern(pattern);
 		var debugMode = $('#demo-debug-mode').checked;
-		var duration = totalDuration(pattern);
-		var supported = Haptic && typeof Haptic.vibrate === 'function' && Haptic.vibrate(pattern);
+		var duration = totalDuration(effectivePattern);
+		var describedPattern = describeEffectivePattern(pattern, effectivePattern);
+		var supported = Haptic && typeof Haptic.vibrate === 'function' && Haptic.vibrate(effectivePattern);
 
 		options = options || {};
 
 		if (supported) {
-			setStatus('is-success', 'Pattern fired on this device: [' + pattern.join(', ') + '] ms');
+			setStatus('is-success', 'Pattern fired on this device: ' + describedPattern);
 		} else if (debugMode) {
-			playDebugAudio(pattern);
-			setStatus('is-info', 'Debug mode simulated the pattern with ripple/audio: [' + pattern.join(', ') + '] ms');
+			playDebugAudio(effectivePattern);
+			setStatus('is-info', 'Debug mode simulated the pattern with ripple/audio: ' + describedPattern);
 		} else {
 			setStatus('is-error', 'No haptic support detected here. Turn on Desktop Debug Mode to preview the result.');
 		}
@@ -239,7 +265,7 @@
 		var selectorValue = $('#demo-selector').value || '.cta-button';
 		$('#demo-rule-target').textContent = selectorValue + ' example';
 		customWrap.style.display = preset === 'custom' ? '' : 'none';
-		renderPatternBadge(resolveCurrentRulePattern());
+		renderPatternBadge(getEffectivePattern(resolveCurrentRulePattern()));
 	}
 
 	function updatePluginClassUI() {
@@ -303,7 +329,7 @@
 	function bindEvents() {
 		$('#demo-preset').addEventListener('change', updateRuleBuilderUI);
 		$('#demo-custom-pattern').addEventListener('input', function () {
-			renderPatternBadge(resolveCurrentRulePattern());
+			renderPatternBadge(getEffectivePattern(resolveCurrentRulePattern()));
 		});
 		$('#demo-selector').addEventListener('input', updateRuleBuilderUI);
 		$('#demo-plugin-class').addEventListener('input', updatePluginClassUI);
@@ -328,7 +354,7 @@
 					rippleTarget: button,
 					secondaryRippleTarget: $('#demo-rule-target')
 				});
-				renderPatternBadge(pattern);
+				renderPatternBadge(getEffectivePattern(pattern));
 			});
 		});
 

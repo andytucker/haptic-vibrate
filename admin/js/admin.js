@@ -17,6 +17,30 @@
 	var MAX_PATTERN_MS   = 1000;
 	var Haptic = window.WPHapticCore || null;
 
+	function getEffectivePattern( pattern ) {
+		if ( Haptic && typeof Haptic.normalizePattern === 'function' ) {
+			return Haptic.normalizePattern( pattern );
+		}
+
+		return Array.isArray( pattern ) ? pattern.slice() : [ pattern ];
+	}
+
+	function formatPatternText( pattern ) {
+		return '[' + pattern.join( ', ' ) + '] ms';
+	}
+
+	function patternsMatch( first, second ) {
+		return first.join( ',' ) === second.join( ',' );
+	}
+
+	function describeEffectivePattern( rawPattern, effectivePattern ) {
+		if ( patternsMatch( rawPattern, effectivePattern ) ) {
+			return formatPatternText( effectivePattern );
+		}
+
+		return formatPatternText( effectivePattern ) + ' (normalized from ' + formatPatternText( rawPattern ) + ')';
+	}
+
 	var _audioCtx = null;
 	function getAudioContext() {
 		if ( ! _audioCtx ) {
@@ -85,16 +109,18 @@
 	 * @param {jQuery}   [$elements]  Elements to apply ripple to (optional).
 	 */
 	function triggerPattern( pattern, debugMode, $elements ) {
-		if ( pattern.length === 0 ) { return; }
+		var effectivePattern = getEffectivePattern( pattern );
 
-		if ( Haptic && Haptic.vibrate( pattern ) ) {
+		if ( effectivePattern.length === 0 ) { return; }
+
+		if ( Haptic && Haptic.vibrate( effectivePattern ) ) {
 			return;
 		}
 
 		if ( debugMode ) {
-			playDebugAudio( pattern );
+			playDebugAudio( effectivePattern );
 			if ( $elements && $elements.length ) {
-				playDebugVisual( $elements, pattern );
+				playDebugVisual( $elements, effectivePattern );
 			}
 		}
 	}
@@ -211,7 +237,7 @@
 	 * @param {jQuery} $row
 	 */
 	function refreshRowBadge( $row ) {
-		var pattern = resolveRowPattern( $row );
+		var pattern = getEffectivePattern( resolveRowPattern( $row ) );
 		var $wrap   = $row.find( '.haptic-rule__preset' ).closest( '.haptic-field--preset' );
 		$wrap.find( '.haptic-pattern-badge' ).remove();
 		$wrap.append( buildPatternBadge( pattern ) );
@@ -220,8 +246,9 @@
 	/** Flash a tiny inline status message near the test button. */
 	function showInlineFeedback( $row, pattern, debugMode ) {
 		var $btn = $row.find( '.haptic-rule__test-btn' );
+		var effectivePattern = getEffectivePattern( pattern );
 		$btn.addClass( 'haptic-btn--loading' );
-		var total = pattern.reduce( function ( a, b ) { return a + b; }, 0 );
+		var total = effectivePattern.reduce( function ( a, b ) { return a + b; }, 0 );
 		setTimeout( function () {
 			$btn.removeClass( 'haptic-btn--loading' );
 		}, Math.max( total, 400 ) );
@@ -339,17 +366,20 @@
 			pattern = [ 200 ];
 		}
 
-		if ( Haptic && Haptic.vibrate( pattern ) ) {
+		var effectivePattern = getEffectivePattern( pattern );
+		var describedPattern = describeEffectivePattern( pattern, effectivePattern );
+
+		if ( Haptic && Haptic.vibrate( effectivePattern ) ) {
 			$status
 				.removeClass( 'is-error is-info' )
 				.addClass( 'is-success' )
-				.text( '✓ Haptic fired: [' + pattern.join( ', ' ) + '] ms' );
+				.text( '✓ Haptic fired: ' + describedPattern );
 		} else if ( debugMode ) {
-			playDebugAudio( pattern );
+			playDebugAudio( effectivePattern );
 			$status
 				.removeClass( 'is-error is-success' )
 				.addClass( 'is-info' )
-				.text( '🔊 Debug: played audio for [' + pattern.join( ', ' ) + '] ms' );
+				.text( '🔊 Debug: played audio for ' + describedPattern );
 		} else {
 			$status
 				.removeClass( 'is-success is-info' )
@@ -358,7 +388,7 @@
 		}
 
 		$btn.addClass( 'haptic-btn--loading' );
-		var total = pattern.reduce( function ( a, b ) { return a + b; }, 0 );
+		var total = effectivePattern.reduce( function ( a, b ) { return a + b; }, 0 );
 		setTimeout( function () {
 			$btn.removeClass( 'haptic-btn--loading' );
 		}, Math.max( total, 500 ) );

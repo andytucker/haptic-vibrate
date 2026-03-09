@@ -270,6 +270,7 @@
 		hasVibration: hasVibrationAPI,
 		hasIOSHapticFallback: hasIOSHapticFallback,
 		isSupported: isSupported,
+		normalizePattern: normalizePattern,
 		vibrate: vibrate,
 		light: light,
 		medium: medium,

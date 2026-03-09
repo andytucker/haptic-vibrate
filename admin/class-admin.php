@@ -307,8 +307,9 @@ class WP_Haptic_Vibrate_Admin {
 		$custom_pattern   = isset( $rule['custom_pattern'] ) ? $rule['custom_pattern'] : '';
 		$trigger          = isset( $rule['trigger'] ) ? $rule['trigger'] : 'click';
 		$use_plugin_class = ! empty( $rule['use_plugin_class'] );
-		$opt              = esc_attr( self::OPTION_KEY );
-		$idx              = esc_attr( $index );
+		$opt              = self::OPTION_KEY;
+		$idx              = (string) $index;
+		$custom_class     = 'custom' !== $preset ? ' haptic-hidden' : '';
 
 		$triggers = array(
 			'click'      => __( 'Click / Tap', 'wp-haptic-vibrate' ),
@@ -316,7 +317,7 @@ class WP_Haptic_Vibrate_Admin {
 			'touchstart' => __( 'Touch Start', 'wp-haptic-vibrate' ),
 		);
 		?>
-		<div class="haptic-rule" data-index="<?php echo $idx; ?>">
+		<div class="haptic-rule" data-index="<?php echo esc_attr( $idx ); ?>">
 			<div class="haptic-rule__handle" aria-hidden="true" title="<?php esc_attr_e( 'Drag to reorder', 'wp-haptic-vibrate' ); ?>">
 				<span class="dashicons dashicons-menu"></span>
 			</div>
@@ -330,7 +331,7 @@ class WP_Haptic_Vibrate_Admin {
 						</label>
 						<input
 							type="text"
-							name="<?php echo $opt; ?>[rules][<?php echo $idx; ?>][selector]"
+							name="<?php echo esc_attr( $opt ); ?>[rules][<?php echo esc_attr( $idx ); ?>][selector]"
 							value="<?php echo esc_attr( $selector ); ?>"
 							class="haptic-input haptic-rule__selector"
 							placeholder=".my-button, #cta"
@@ -341,7 +342,7 @@ class WP_Haptic_Vibrate_Admin {
 						<label class="haptic-toggle haptic-toggle--small" title="<?php esc_attr_e( 'Also target the plugin class', 'wp-haptic-vibrate' ); ?>">
 							<input
 								type="checkbox"
-								name="<?php echo $opt; ?>[rules][<?php echo $idx; ?>][use_plugin_class]"
+								name="<?php echo esc_attr( $opt ); ?>[rules][<?php echo esc_attr( $idx ); ?>][use_plugin_class]"
 								value="1"
 								class="haptic-rule__use-plugin-class"
 								<?php checked( $use_plugin_class ); ?>
@@ -361,7 +362,7 @@ class WP_Haptic_Vibrate_Admin {
 							<?php esc_html_e( 'Pattern Preset', 'wp-haptic-vibrate' ); ?>
 						</label>
 						<select
-							name="<?php echo $opt; ?>[rules][<?php echo $idx; ?>][preset]"
+							name="<?php echo esc_attr( $opt ); ?>[rules][<?php echo esc_attr( $idx ); ?>][preset]"
 							class="haptic-select haptic-rule__preset"
 						>
 							<?php foreach ( self::$presets as $key => $p ) : ?>
@@ -376,13 +377,13 @@ class WP_Haptic_Vibrate_Admin {
 						</select>
 					</div>
 
-					<div class="haptic-field haptic-field--custom <?php echo 'custom' !== $preset ? 'haptic-hidden' : ''; ?>">
+					<div class="haptic-field haptic-field--custom<?php echo esc_attr( $custom_class ); ?>">
 						<label class="haptic-field__label">
 							<?php esc_html_e( 'Custom Pattern (ms)', 'wp-haptic-vibrate' ); ?>
 						</label>
 						<input
 							type="text"
-							name="<?php echo $opt; ?>[rules][<?php echo $idx; ?>][custom_pattern]"
+							name="<?php echo esc_attr( $opt ); ?>[rules][<?php echo esc_attr( $idx ); ?>][custom_pattern]"
 							value="<?php echo esc_attr( $custom_pattern ); ?>"
 							class="haptic-input haptic-rule__custom-pattern"
 							placeholder="200,100,200"
@@ -395,7 +396,7 @@ class WP_Haptic_Vibrate_Admin {
 							<?php esc_html_e( 'Trigger Event', 'wp-haptic-vibrate' ); ?>
 						</label>
 						<select
-							name="<?php echo $opt; ?>[rules][<?php echo $idx; ?>][trigger]"
+							name="<?php echo esc_attr( $opt ); ?>[rules][<?php echo esc_attr( $idx ); ?>][trigger]"
 							class="haptic-select haptic-rule__trigger"
 						>
 							<?php foreach ( $triggers as $val => $label ) : ?>

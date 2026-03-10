@@ -18,4 +18,3 @@ vendor/
 
 # Temporary packaging workspace
 dist/package/
-dist/*.zip

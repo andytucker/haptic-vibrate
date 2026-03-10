@@ -4,8 +4,20 @@ declare(strict_types=1);
 
 $plugin_slug = 'wp-haptic-vibrate';
 $root_dir    = dirname(__DIR__);
-$source_dir  = $root_dir . DIRECTORY_SEPARATOR . 'dist' . DIRECTORY_SEPARATOR . 'package' . DIRECTORY_SEPARATOR . $plugin_slug;
+$package_dir = $root_dir . DIRECTORY_SEPARATOR . 'dist' . DIRECTORY_SEPARATOR . 'package';
+$source_dir  = $package_dir . DIRECTORY_SEPARATOR . $plugin_slug;
 $zip_path    = $root_dir . DIRECTORY_SEPARATOR . 'dist' . DIRECTORY_SEPARATOR . $plugin_slug . '.zip';
+$release_paths = array(
+	'admin',
+	'assets',
+	'includes',
+	'languages',
+	'public',
+	'LICENSE',
+	'readme.txt',
+	'uninstall.php',
+	'wp-haptic-vibrate.php',
+);
 
 /**
  * Write an error message and stop the build.
@@ -28,6 +40,120 @@ function normalize_zip_entry_path( $path ) {
 	$path = preg_replace( '#/+#', '/', $path );
 
 	return ltrim( $path, '/' );
+}
+
+/**
+ * Remove a directory recursively.
+ *
+ * @param string $directory Directory path.
+ */
+function remove_directory_recursive( $directory ) {
+	if ( ! is_dir( $directory ) ) {
+		return;
+	}
+
+	$iterator = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator( $directory, FilesystemIterator::SKIP_DOTS ),
+		RecursiveIteratorIterator::CHILD_FIRST
+	);
+
+	foreach ( $iterator as $item ) {
+		$path = $item->getPathname();
+
+		if ( $item->isDir() ) {
+			if ( ! rmdir( $path ) ) {
+				fail_build( "Unable to remove directory while staging release package: {$path}" );
+			}
+
+			continue;
+		}
+
+		if ( ! unlink( $path ) ) {
+			fail_build( "Unable to remove file while staging release package: {$path}" );
+		}
+	}
+
+	if ( ! rmdir( $directory ) ) {
+		fail_build( "Unable to remove staged release package directory: {$directory}" );
+	}
+}
+
+/**
+ * Ensure a directory exists.
+ *
+ * @param string $directory Directory path.
+ */
+function ensure_directory_exists( $directory ) {
+	if ( is_dir( $directory ) ) {
+		return;
+	}
+
+	if ( ! mkdir( $directory, 0777, true ) ) {
+		fail_build( "Unable to create directory: {$directory}" );
+	}
+}
+
+/**
+ * Copy a file or directory recursively.
+ *
+ * @param string $source      Source path.
+ * @param string $destination Destination path.
+ */
+function copy_release_path( $source, $destination ) {
+	if ( is_dir( $source ) ) {
+		ensure_directory_exists( $destination );
+
+		$iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator( $source, FilesystemIterator::SKIP_DOTS ),
+			RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		foreach ( $iterator as $item ) {
+			$target_path = $destination . DIRECTORY_SEPARATOR . substr( $item->getPathname(), strlen( $source ) + 1 );
+
+			if ( $item->isDir() ) {
+				ensure_directory_exists( $target_path );
+				continue;
+			}
+
+			ensure_directory_exists( dirname( $target_path ) );
+
+			if ( ! copy( $item->getPathname(), $target_path ) ) {
+				fail_build( "Unable to copy file into staged release package: {$target_path}" );
+			}
+		}
+
+		return;
+	}
+
+	ensure_directory_exists( dirname( $destination ) );
+
+	if ( ! copy( $source, $destination ) ) {
+		fail_build( "Unable to copy file into staged release package: {$destination}" );
+	}
+}
+
+/**
+ * Stage the release package from the current repository files.
+ *
+ * @param string   $root_dir      Repository root.
+ * @param string   $package_dir   Package directory.
+ * @param string[] $release_paths Relative paths to include in the release.
+ */
+function stage_release_package( $root_dir, $package_dir, array $release_paths ) {
+	remove_directory_recursive( $package_dir );
+	ensure_directory_exists( $package_dir );
+
+	foreach ( $release_paths as $relative_path ) {
+		$source_path      = $root_dir . DIRECTORY_SEPARATOR . $relative_path;
+		$destination_path = $package_dir . DIRECTORY_SEPARATOR . $relative_path;
+
+		if ( ! file_exists( $source_path ) ) {
+			fail_build( "Release package source path not found: {$source_path}" );
+		}
+
+		copy_release_path( $source_path, $destination_path );
+	}
 }
 
 /**
@@ -156,13 +282,11 @@ function get_raw_zip_entry_names( $zip_path ) {
 	return $entries;
 }
 
-if ( ! is_dir( $source_dir ) ) {
-	fail_build( "Release package source not found: {$source_dir}" );
-}
-
 if ( ! class_exists( 'ZipArchive' ) ) {
 	fail_build( 'The PHP zip extension is required to build the release archive.' );
 }
+
+stage_release_package( $root_dir, $source_dir, $release_paths );
 
 $source_dir = realpath( $source_dir );
 

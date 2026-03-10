@@ -91,6 +91,12 @@
 	overflow: hidden;
 }
 
+.haptic-col--sidebar {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
 .haptic-card--compact .haptic-card__body {
 	padding: 16px 20px;
 }
@@ -149,14 +155,10 @@
 	min-width: 0;
 }
 
-.haptic-field--shrink {
-	flex: 0 0 auto;
-}
-
-.haptic-field--preset  { flex: 0 0 190px; }
-.haptic-field--custom  { flex: 1 1 160px; }
-.haptic-field--trigger { flex: 0 0 150px; }
-.haptic-field--test    { flex: 0 0 42px; }
+.haptic-field--preset        { flex: 0 0 190px; }
+.haptic-field--custom        { flex: 1 1 160px; }
+.haptic-field--class-preview { flex: 0 1 260px; min-width: 220px; }
+.haptic-field--test          { flex: 0 0 42px; }
 
 .haptic-field__label {
 	font-size: 0.8rem;
@@ -305,7 +307,7 @@
 	font-size: 0.875rem;
 	font-weight: 600;
 	border-radius: var(--haptic-radius-sm);
-	border: 2px solid transparent;
+	border: 1px solid var(--haptic-primary);
 	cursor: pointer;
 	transition:
 		background var(--haptic-transition),
@@ -313,6 +315,9 @@
 		box-shadow var(--haptic-transition),
 		transform 0.1s ease;
 	text-decoration: none;
+	background: linear-gradient(135deg, var(--haptic-primary) 0%, var(--haptic-accent) 100%);
+	color: #fff;
+	box-shadow: 0 8px 18px rgb(79 70 229 / 0.14);
 }
 
 .haptic-btn:active {
@@ -324,48 +329,11 @@
 	outline-offset: 2px;
 }
 
-.haptic-btn--primary {
-	background: var(--haptic-primary);
+.haptic-btn:hover {
+	background: linear-gradient(135deg, var(--haptic-primary-dark) 0%, var(--haptic-accent-dark) 100%);
+	border-color: var(--haptic-primary-dark);
 	color: #fff;
-}
-
-.haptic-btn--primary:hover {
-	background: var(--haptic-primary-dark);
-	color: #fff;
-}
-
-.haptic-btn--accent {
-	background: var(--haptic-accent);
-	color: #fff;
-}
-
-.haptic-btn--accent:hover {
-	background: var(--haptic-accent-dark);
-	color: #fff;
-}
-
-.haptic-btn--ghost {
-	background: transparent;
-	border-color: var(--haptic-border);
-	color: var(--haptic-text-muted);
-}
-
-.haptic-btn--ghost:hover {
-	border-color: var(--haptic-primary);
-	color: var(--haptic-primary);
-	background: rgb(79 70 229 / 0.05);
-}
-
-.haptic-btn--danger {
-	background: transparent;
-	border-color: var(--haptic-border);
-	color: var(--haptic-text-muted);
-}
-
-.haptic-btn--danger:hover {
-	background: rgb(239 68 68 / 0.08);
-	border-color: var(--haptic-danger);
-	color: var(--haptic-danger);
+	box-shadow: 0 10px 22px rgb(55 48 163 / 0.18);
 }
 
 .haptic-btn--icon {
@@ -385,9 +353,9 @@
 
 /* Save button override */
 .haptic-save-btn.button-primary {
-	background: var(--haptic-primary) !important;
+	background: linear-gradient(135deg, var(--haptic-primary) 0%, var(--haptic-accent) 100%) !important;
 	border-color: var(--haptic-primary) !important;
-	box-shadow: none !important;
+	box-shadow: 0 8px 18px rgb(79 70 229 / 0.14) !important;
 	width: 100%;
 	text-align: center;
 	display: flex;
@@ -400,7 +368,7 @@
 }
 
 .haptic-save-btn.button-primary:hover {
-	background: var(--haptic-primary-dark) !important;
+	background: linear-gradient(135deg, var(--haptic-primary-dark) 0%, var(--haptic-accent-dark) 100%) !important;
 	border-color: var(--haptic-primary-dark) !important;
 }
 
@@ -490,12 +458,19 @@
 }
 
 .haptic-rule__row--selector {
-	align-items: center;
+	align-items: flex-end;
 }
 
 .haptic-rule__remove {
 	flex-shrink: 0;
 	padding-top: 22px;
+}
+
+.haptic-rule__class-preview[readonly] {
+	background: #f8fafc;
+	color: var(--haptic-text);
+	font-family: Consolas, "SFMono-Regular", Menlo, monospace;
+	font-size: 0.82rem;
 }
 
 /* ── Pattern Badge (inline) ───────────────────────────────────────────── */
@@ -562,6 +537,10 @@
 	transition: opacity var(--haptic-transition);
 }
 
+#haptic-tester-btn {
+	margin-top: 12px;
+}
+
 .haptic-tester-status.is-success {
 	color: var(--haptic-success);
 }
@@ -598,5 +577,5 @@
 		flex-direction: column;
 	}
 	.haptic-field--preset,
-	.haptic-field--trigger { flex: 1 1 100%; }
+	.haptic-field--class-preview { flex: 1 1 100%; min-width: 0; }
 }

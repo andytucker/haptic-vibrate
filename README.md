@@ -7,12 +7,12 @@
 ## Features
 
 - 🎯 **CSS-selector rules** — Map any CSS selector to a vibration pattern
-- 📳 **Plugin class** — Drop the configurable plugin class onto any HTML element
+- 🏷️ **Pattern classes** — Every rule gets an auto-generated class like `.haptic-vibrate-heartbeat`
 - ⚡ **15 built-in presets** — Light, Medium, Heavy, Single Short, Double Tap, Heartbeat, SOS, Success, Warning, Error, and more
 - 🛠 **Custom patterns** — Enter any comma-separated millisecond sequence
 - 📱 **Cross-platform haptics** — Android uses the Vibration API; iOS Safari 17.4+ uses a switch-based haptic fallback
 - 🖥 **Desktop debug mode** — Visual ripple + audio beep on browsers without haptic support
-- 🔁 **Multiple trigger events** — Click/Tap, Mouse Down, Touch Start
+- 👆 **Automatic interaction listening** — Rules respond to pointer, touch, click, and keyboard activation automatically
 - ↕️ **Drag-and-drop rule ordering**
 - 🌍 **Translation-ready** (POT file included)
 
@@ -31,16 +31,18 @@
 ### Using a CSS Selector
 
 In the admin page, click **Add Rule** and enter a CSS selector like `.my-button` or `#cta-link`.
-Choose a vibration preset (or enter a custom pattern) and select the trigger event. Save Settings.
+Choose a vibration preset (or enter a custom pattern) and save settings.
 
-### Using the Plugin Class
+### Using the Generated Pattern Class
 
-1. Set the **Plugin Class** name (default: `haptic-vibrate`) in the sidebar
-2. Create a rule and check **Use Plugin Class**
+1. Create or edit a rule.
+2. Copy the **Pattern Class** shown for that rule, such as `.haptic-vibrate-heartbeat`.
 3. Add the class to any HTML element:
    ```html
-   <button class="haptic-vibrate">Click me</button>
+	<button class="haptic-vibrate-heartbeat">Click me</button>
    ```
+
+Preset-based classes are stable. Custom patterns receive numbered classes such as `.haptic-vibrate-custom-1`.
 
 ### Custom Patterns
 

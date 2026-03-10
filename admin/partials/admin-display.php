@@ -46,7 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<p class="haptic-card__desc">
 							<?php
 							esc_html_e(
-								'Map CSS selectors or the plugin class to vibration patterns. Each rule fires when the user interacts with a matching element.',
+								'Map CSS selectors or generated pattern classes to vibration patterns. Each rule listens for common user interactions on matching elements.',
 								'wp-haptic-vibrate'
 							);
 							?>
@@ -86,43 +86,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 			<!-- ── Right column ─────────────────────────────────────── -->
 			<div class="haptic-col haptic-col--sidebar">
-
-				<!-- Plugin Class Card -->
-				<div class="haptic-card haptic-card--compact">
-					<div class="haptic-card__header">
-						<h2 class="haptic-card__title">
-							<span class="dashicons dashicons-tag" aria-hidden="true"></span>
-							<?php esc_html_e( 'Plugin Class', 'wp-haptic-vibrate' ); ?>
-						</h2>
-					</div>
-					<div class="haptic-card__body">
-						<p class="haptic-field__help">
-							<?php
-							esc_html_e(
-								'Add this CSS class to any HTML element to apply the matching rule that has "Use Plugin Class" enabled.',
-								'wp-haptic-vibrate'
-							);
-							?>
-						</p>
-						<div class="haptic-field">
-							<label for="haptic-plugin-class" class="haptic-field__label">
-								<?php esc_html_e( 'Class name', 'wp-haptic-vibrate' ); ?>
-							</label>
-							<div class="haptic-field__input-wrap haptic-field__input-wrap--prefix">
-								<span class="haptic-field__prefix">.</span>
-								<input
-									type="text"
-									id="haptic-plugin-class"
-									name="<?php echo esc_attr( WP_Haptic_Vibrate_Admin::OPTION_KEY ); ?>[plugin_class]"
-									value="<?php echo esc_attr( $settings['plugin_class'] ); ?>"
-									class="haptic-input"
-									pattern="[a-zA-Z0-9_-]+"
-									spellcheck="false"
-								/>
-							</div>
-						</div>
-					</div>
-				</div>
 
 				<!-- Debug Mode Card -->
 				<div class="haptic-card haptic-card--compact" id="haptic-debug-card">

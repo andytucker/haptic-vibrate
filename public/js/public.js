@@ -2,7 +2,7 @@
  * WP Haptic Vibrate – Public JavaScript
  *
  * Reads the wpHapticPublic configuration injected by PHP and attaches
- * event listeners that trigger vibration (or debug feedback) on matching
+ * interaction listeners that trigger vibration (or debug feedback) on matching
  * elements according to the admin-defined rules.
  *
  * No dependencies – pure vanilla ES5 for maximum compatibility.
@@ -15,7 +15,9 @@
 
 	var rules     = wpHapticPublic.rules     || [];
 	var debugMode = wpHapticPublic.debugMode || false;
+	var PRESS_DEBOUNCE_MS = 450;
 	var Haptic = window.WPHapticCore || null;
+	var lastInteractionAt = 0;
 
 	function getEffectivePattern( pattern ) {
 		if ( Haptic && typeof Haptic.normalizePattern === 'function' ) {
@@ -102,25 +104,84 @@
 		}
 	}
 
-	rules.forEach( function ( rule ) {
-		if ( ! rule.selectors || rule.selectors.length === 0 ) { return; }
+	function shouldHandleEvent( event ) {
+		if ( ! event ) {
+			return false;
+		}
 
-		var combined = rule.selectors.join( ', ' );
-		var pattern  = rule.pattern  || [ 200 ];
-		var trigger  = rule.trigger  || 'click';
+		if ( 'keydown' === event.type ) {
+			return 'Enter' === event.key || ' ' === event.key || 'Spacebar' === event.key;
+		}
 
-		document.body.addEventListener( trigger, function ( e ) {
-			var el = e.target;
-			while ( el && el !== document.body ) {
+		if ( 'click' === event.type ) {
+			return ( Date.now() - lastInteractionAt ) >= PRESS_DEBOUNCE_MS;
+		}
+
+		return true;
+	}
+
+	function markInteraction( event ) {
+		if ( event && 'click' !== event.type ) {
+			lastInteractionAt = Date.now();
+		}
+	}
+
+	function findMatchingRule( target ) {
+		var current = target;
+		var ruleIndex;
+
+		while ( current && current !== document.body ) {
+			for ( ruleIndex = 0; ruleIndex < rules.length; ruleIndex++ ) {
+				var rule = rules[ ruleIndex ];
+				var combined;
+
+				if ( ! rule.selectors || rule.selectors.length === 0 ) {
+					continue;
+				}
+
+				combined = rule.selectors.join( ', ' );
+
 				try {
-					if ( el.matches( combined ) ) {
-						triggerHaptic( el, pattern );
-						return;
+					if ( current.matches( combined ) ) {
+						return {
+							element: current,
+							rule: rule
+						};
 					}
 				} catch (err) {}
-				el = el.parentElement;
 			}
-		}, { passive: true } );
-	} );
+
+			current = current.parentElement;
+		}
+
+		return null;
+	}
+
+	function handleInteraction( event ) {
+		var match;
+
+		if ( ! shouldHandleEvent( event ) ) {
+			return;
+		}
+
+		match = findMatchingRule( event.target );
+
+		if ( ! match ) {
+			return;
+		}
+
+		markInteraction( event );
+		triggerHaptic( match.element, match.rule.pattern || [ 200 ] );
+	}
+
+	if ( window.PointerEvent ) {
+		document.body.addEventListener( 'pointerdown', handleInteraction, { passive: true } );
+	} else {
+		document.body.addEventListener( 'touchstart', handleInteraction, { passive: true } );
+		document.body.addEventListener( 'mousedown', handleInteraction, { passive: true } );
+	}
+
+	document.body.addEventListener( 'click', handleInteraction, { passive: true } );
+	document.body.addEventListener( 'keydown', handleInteraction );
 
 }());

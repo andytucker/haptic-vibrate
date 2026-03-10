@@ -27,9 +27,8 @@ class WP_Haptic_Vibrate_Activator {
 	 */
 	public static function activate() {
 		$default_options = array(
-			'rules'        => array(),
-			'debug_mode'   => false,
-			'plugin_class' => 'haptic-vibrate',
+			'rules'      => array(),
+			'debug_mode' => false,
 		);
 
 		if ( ! get_option( 'wp_haptic_vibrate_settings' ) ) {

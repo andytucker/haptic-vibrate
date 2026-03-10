@@ -104,24 +104,22 @@ class WP_Haptic_Vibrate_Public {
 
 		// Build rules suitable for the frontend – only expose what JS needs.
 		$frontend_rules = array_map(
-			function ( $rule ) use ( $settings ) {
+			function ( $rule, $index ) {
 				$selectors = array();
 
 				if ( ! empty( $rule['selector'] ) ) {
 					$selectors[] = $rule['selector'];
 				}
 
-				if ( ! empty( $rule['use_plugin_class'] ) && ! empty( $settings['plugin_class'] ) ) {
-					$selectors[] = '.' . $settings['plugin_class'];
-				}
+				$selectors[] = '.' . $this->get_rule_class_name( $rule, $index );
 
 				return array(
 					'selectors' => $selectors,
 					'pattern'   => isset( $rule['pattern'] ) ? array_map( 'absint', $rule['pattern'] ) : array( 200 ),
-					'trigger'   => isset( $rule['trigger'] ) ? $rule['trigger'] : 'click',
 				);
 			},
-			(array) $settings['rules']
+			(array) $settings['rules'],
+			array_keys( (array) $settings['rules'] )
 		);
 
 		// Remove rules with no selectors.
@@ -155,12 +153,33 @@ class WP_Haptic_Vibrate_Public {
 			$this->settings = wp_parse_args(
 				(array) get_option( 'wp_haptic_vibrate_settings', array() ),
 				array(
-					'rules'        => array(),
-					'debug_mode'   => false,
-					'plugin_class' => 'haptic-vibrate',
+					'rules'      => array(),
+					'debug_mode' => false,
 				)
 			);
 		}
 		return $this->settings;
+	}
+
+	/**
+	 * Build the generated class name for a rule.
+	 *
+	 * @since 1.0.0
+	 * @param array $rule  Rule data.
+	 * @param int   $index Rule index.
+	 * @return string
+	 */
+	private function get_rule_class_name( $rule, $index ) {
+		$preset = isset( $rule['preset'] ) ? sanitize_key( $rule['preset'] ) : 'single_short';
+
+		if ( 'custom' === $preset ) {
+			return 'haptic-vibrate-custom-' . ( absint( $index ) + 1 );
+		}
+
+		if ( ! isset( WP_Haptic_Vibrate_Admin::$presets[ $preset ] ) ) {
+			$preset = 'single_short';
+		}
+
+		return 'haptic-vibrate-' . $preset;
 	}
 }

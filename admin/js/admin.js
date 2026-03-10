@@ -4,6 +4,7 @@
  * Handles:
  *  - Dynamic rule rows (add / remove / reorder via drag-and-drop)
  *  - Preset selector → custom pattern field visibility
+ *  - Generated per-pattern class previews
  *  - Inline pattern tester (Web Vibration API + AudioContext fallback)
  *  - Standalone Pattern Tester card
  *  - Debug-mode toggle preview
@@ -15,6 +16,7 @@
 
 	var MAX_PULSE_WIDTH  = 40;
 	var MAX_PATTERN_MS   = 1000;
+	var CLASS_PREFIX     = 'haptic-vibrate-';
 	var Haptic = window.WPHapticCore || null;
 
 	function getEffectivePattern( pattern ) {
@@ -51,11 +53,6 @@
 		return _audioCtx;
 	}
 
-	/**
-	 * Play a short tone burst matching the given pattern for desktop debug.
-	 *
-	 * @param {number[]} pattern Array of ms values (vibrate, pause, vibrate …).
-	 */
 	function playDebugAudio( pattern ) {
 		var ctx = getAudioContext();
 		if ( ! ctx ) { return; }
@@ -77,19 +74,12 @@
 					now + ( offset + ms ) / 1000
 				);
 				osc.start( now + offset / 1000 );
-				osc.stop(  now + ( offset + ms ) / 1000 );
+				osc.stop( now + ( offset + ms ) / 1000 );
 			}
 			offset += ms;
 		} );
 	}
 
-	/**
-	 * Fire a visual ripple on the element(s) matching the given selectors.
-	 * Used for desktop debug feedback.
-	 *
-	 * @param {jQuery} $elements jQuery collection.
-	 * @param {number[]} pattern Vibration pattern.
-	 */
 	function playDebugVisual( $elements, pattern ) {
 		var total = pattern.reduce( function ( a, b ) { return a + b; }, 0 );
 		$elements.each( function () {
@@ -101,13 +91,6 @@
 		} );
 	}
 
-	/**
-	 * Attempt to vibrate; fall back to debug audio/visual if unavailable.
-	 *
-	 * @param {number[]} pattern      Vibration pattern.
-	 * @param {boolean}  debugMode    Whether debug mode is active.
-	 * @param {jQuery}   [$elements]  Elements to apply ripple to (optional).
-	 */
 	function triggerPattern( pattern, debugMode, $elements ) {
 		var effectivePattern = getEffectivePattern( pattern );
 
@@ -125,36 +108,60 @@
 		}
 	}
 
-	/**
-	 * Render a tiny bar-chart representation of a vibration pattern.
-	 *
-	 * @param  {number[]} pattern Array of ms values.
-	 * @return {jQuery}           Rendered badge element.
-	 */
 	function buildPatternBadge( pattern ) {
 		var $badge = $( '<span class="haptic-pattern-badge" aria-hidden="true"></span>' );
 		var total  = Math.max.apply( null, pattern ) || MAX_PATTERN_MS;
 
 		pattern.forEach( function ( ms, idx ) {
-			var width   = Math.max( 4, Math.round( ( ms / total ) * MAX_PULSE_WIDTH ) );
-			var $bar    = $( '<span class="haptic-pattern-badge__pulse"></span>' );
+			var width = Math.max( 4, Math.round( ( ms / total ) * MAX_PULSE_WIDTH ) );
+			var $bar  = $( '<span class="haptic-pattern-badge__pulse"></span>' );
 			$bar.css( { width: width + 'px' } );
 			if ( idx % 2 !== 0 ) {
 				$bar.css( { background: 'transparent', border: 'none' } );
 			}
 			$badge.append( $bar );
 		} );
+
 		return $badge;
 	}
 
-	var $rulesList    = $( '#haptic-rules-list' );
-	var $emptyNotice  = $( '#haptic-rules-empty' );
-	var ruleIndex     = 0;
+	function parsePatternString( str ) {
+		var parts = ( str || '' ).split( ',' );
+		var pattern = [];
 
-	/**
-	 * Get the highest existing numeric index from the rendered rules so we can
-	 * continue from it when adding new rows.
-	 */
+		parts.forEach( function ( p ) {
+			var v = parseInt( p.trim(), 10 );
+			if ( v > 0 ) {
+				pattern.push( v );
+			}
+		} );
+
+		return pattern.length ? pattern : [ 200 ];
+	}
+
+	function getRowIndex( $row ) {
+		var index = parseInt( $row.attr( 'data-index' ), 10 );
+
+		return isNaN( index ) ? 0 : index;
+	}
+
+	function buildRuleClassName( preset, index ) {
+		if ( preset === 'custom' ) {
+			return CLASS_PREFIX + 'custom-' + ( index + 1 );
+		}
+
+		return CLASS_PREFIX + ( preset || 'single_short' );
+	}
+
+	function refreshClassPreview( $row ) {
+		var preset = $row.find( '.haptic-rule__preset' ).val();
+		$row.find( '.haptic-rule__class-preview' ).val( buildRuleClassName( preset, getRowIndex( $row ) ) );
+	}
+
+	var $rulesList   = $( '#haptic-rules-list' );
+	var $emptyNotice = $( '#haptic-rules-empty' );
+	var ruleIndex    = 0;
+
 	function refreshRuleIndex() {
 		$rulesList.find( '.haptic-rule' ).each( function () {
 			var idx = parseInt( $( this ).data( 'index' ), 10 );
@@ -164,22 +171,67 @@
 		} );
 	}
 
-	/** Show or hide the "no rules" placeholder. */
 	function toggleEmptyNotice() {
 		var hasRules = $rulesList.find( '.haptic-rule' ).length > 0;
 		$emptyNotice.toggle( ! hasRules );
 	}
 
-	/**
-	 * Attach live event listeners to a rule row.
-	 *
-	 * @param {jQuery} $row The rule row element.
-	 */
+	function resolveRowPattern( $row ) {
+		var preset = $row.find( '.haptic-rule__preset' ).val();
+
+		if ( preset === 'custom' ) {
+			return parsePatternString( $row.find( '.haptic-rule__custom-pattern' ).val() );
+		}
+
+		if ( wpHapticAdmin.presets[ preset ] ) {
+			return wpHapticAdmin.presets[ preset ].pattern;
+		}
+
+		return [ 200 ];
+	}
+
+	function refreshRowBadge( $row ) {
+		var pattern = getEffectivePattern( resolveRowPattern( $row ) );
+		var $wrap   = $row.find( '.haptic-rule__preset' ).closest( '.haptic-field--preset' );
+
+		$wrap.find( '.haptic-pattern-badge' ).remove();
+		$wrap.append( buildPatternBadge( pattern ) );
+		refreshClassPreview( $row );
+	}
+
+	function showInlineFeedback( $row, pattern ) {
+		var $btn = $row.find( '.haptic-rule__test-btn' );
+		var total = getEffectivePattern( pattern ).reduce( function ( a, b ) { return a + b; }, 0 );
+
+		$btn.addClass( 'haptic-btn--loading' );
+		setTimeout( function () {
+			$btn.removeClass( 'haptic-btn--loading' );
+		}, Math.max( total, 400 ) );
+	}
+
+	function syncRuleRows() {
+		$rulesList.find( '.haptic-rule' ).each( function ( i ) {
+			var $row = $( this );
+
+			$row.attr( 'data-index', i );
+			$row.find( '[name]' ).each( function () {
+				var $field = $( this );
+				$field.attr(
+					'name',
+					$field.attr( 'name' ).replace( /\[rules\]\[[^\]]+\]/, '[rules][' + i + ']' )
+				);
+			} );
+
+			refreshRowBadge( $row );
+		} );
+
+		ruleIndex = $rulesList.find( '.haptic-rule' ).length;
+	}
+
 	function bindRuleRow( $row ) {
 		$row.on( 'change', '.haptic-rule__preset', function () {
-			var $select  = $( this );
-			var preset   = $select.val();
-			var $custom  = $row.find( '.haptic-field--custom' );
+			var preset  = $( this ).val();
+			var $custom = $row.find( '.haptic-field--custom' );
 			$custom.toggleClass( 'haptic-hidden', preset !== 'custom' );
 			refreshRowBadge( $row );
 		} );
@@ -191,80 +243,30 @@
 		$row.on( 'click', '.haptic-rule__remove-btn', function () {
 			if ( window.confirm( wpHapticAdmin.i18n.confirmRemove ) ) {
 				$row.remove();
+				syncRuleRows();
 				toggleEmptyNotice();
 			}
 		} );
 
 		$row.on( 'click', '.haptic-rule__test-btn', function () {
-			var pattern = resolveRowPattern( $row );
+			var pattern   = resolveRowPattern( $row );
 			var debugMode = $( '#haptic-debug-mode' ).is( ':checked' );
+
 			triggerPattern( pattern, debugMode, $( this ) );
-			showInlineFeedback( $row, pattern, debugMode );
+			showInlineFeedback( $row, pattern );
 		} );
 	}
 
-	/**
-	 * Parse the current preset/custom value of a row into a pattern array.
-	 *
-	 * @param  {jQuery}   $row
-	 * @return {number[]}
-	 */
-	function resolveRowPattern( $row ) {
-		var preset = $row.find( '.haptic-rule__preset' ).val();
-		if ( preset === 'custom' ) {
-			return parsePatternString( $row.find( '.haptic-rule__custom-pattern' ).val() );
-		}
-		if ( wpHapticAdmin.presets[ preset ] ) {
-			return wpHapticAdmin.presets[ preset ].pattern;
-		}
-		return [ 200 ];
-	}
-
-	/** Parse a comma-separated ms string into an array of positive integers. */
-	function parsePatternString( str ) {
-		var parts = ( str || '' ).split( ',' );
-		var pattern = [];
-		parts.forEach( function ( p ) {
-			var v = parseInt( p.trim(), 10 );
-			if ( v > 0 ) { pattern.push( v ); }
-		} );
-		return pattern.length ? pattern : [ 200 ];
-	}
-
-	/**
-	 * Render / update the pattern badge for a row.
-	 *
-	 * @param {jQuery} $row
-	 */
-	function refreshRowBadge( $row ) {
-		var pattern = getEffectivePattern( resolveRowPattern( $row ) );
-		var $wrap   = $row.find( '.haptic-rule__preset' ).closest( '.haptic-field--preset' );
-		$wrap.find( '.haptic-pattern-badge' ).remove();
-		$wrap.append( buildPatternBadge( pattern ) );
-	}
-
-	/** Flash a tiny inline status message near the test button. */
-	function showInlineFeedback( $row, pattern, debugMode ) {
-		var $btn = $row.find( '.haptic-rule__test-btn' );
-		var effectivePattern = getEffectivePattern( pattern );
-		$btn.addClass( 'haptic-btn--loading' );
-		var total = effectivePattern.reduce( function ( a, b ) { return a + b; }, 0 );
-		setTimeout( function () {
-			$btn.removeClass( 'haptic-btn--loading' );
-		}, Math.max( total, 400 ) );
-	}
-
-	/** Add a fresh rule row from the template. */
 	function addRuleRow() {
 		var template = $( '#haptic-rule-template' ).html();
 		var html = template.replace( /\{\{INDEX\}\}/g, ruleIndex );
 		var $row = $( html );
-		ruleIndex++;
 
+		ruleIndex++;
 		$emptyNotice.hide();
 		$rulesList.append( $row );
 		bindRuleRow( $row );
-		refreshRowBadge( $row );
+		syncRuleRows();
 
 		$row[0].scrollIntoView( { behavior: 'smooth', block: 'nearest' } );
 		$row.find( '.haptic-rule__selector' ).focus();
@@ -296,9 +298,10 @@
 			e.dataTransfer.dropEffect = 'move';
 			var row = e.target.closest( '.haptic-rule' );
 			if ( row && row !== dragSrc ) {
-				var rect    = row.getBoundingClientRect();
-				var midY    = rect.top + rect.height / 2;
-				var parent  = row.parentNode;
+				var rect   = row.getBoundingClientRect();
+				var midY   = rect.top + rect.height / 2;
+				var parent = row.parentNode;
+
 				if ( e.clientY < midY ) {
 					parent.insertBefore( dragSrc, row );
 				} else {
@@ -311,24 +314,16 @@
 			if ( dragSrc ) {
 				dragSrc.classList.remove( 'haptic-rule--dragging' );
 				dragSrc = null;
-				reindexRows();
+				syncRuleRows();
 			}
 		} );
 
 		$rulesList.on( 'mousedown', '.haptic-rule__handle', function () {
-			var $row = $( this ).closest( '.haptic-rule' );
-			$row.attr( 'draggable', 'true' );
+			$( this ).closest( '.haptic-rule' ).attr( 'draggable', 'true' );
 		} );
 
 		$rulesList.on( 'mouseup', '.haptic-rule__handle', function () {
 			$( this ).closest( '.haptic-rule' ).removeAttr( 'draggable' );
-		} );
-	}
-
-	/** Update data-index attributes after a reorder. */
-	function reindexRows() {
-		$rulesList.find( '.haptic-rule' ).each( function ( i ) {
-			$( this ).attr( 'data-index', i );
 		} );
 	}
 
@@ -337,8 +332,7 @@
 	} );
 
 	$( '#haptic-debug-mode' ).on( 'change', function () {
-		var $preview = $( '#haptic-debug-preview' );
-		$preview.toggleClass( 'is-visible', this.checked );
+		$( '#haptic-debug-preview' ).toggleClass( 'is-visible', this.checked );
 	} );
 
 	if ( $( '#haptic-debug-mode' ).is( ':checked' ) ) {
@@ -346,18 +340,17 @@
 	}
 
 	$( '#haptic-tester-preset' ).on( 'change', function () {
-		var $customWrap = $( '#haptic-tester-custom-wrap' );
-		$customWrap.toggle( this.value === 'custom' );
+		$( '#haptic-tester-custom-wrap' ).toggle( this.value === 'custom' );
 	} );
 
 	$( '#haptic-tester-btn' ).on( 'click', function () {
-		var $btn        = $( this );
-		var $status     = $( '#haptic-tester-status' );
-		var preset      = $( '#haptic-tester-preset' ).val();
-		var customRaw   = $( '#haptic-tester-custom' ).val();
-		var debugMode   = $( '#haptic-debug-mode' ).is( ':checked' );
-
+		var $btn      = $( this );
+		var $status   = $( '#haptic-tester-status' );
+		var preset    = $( '#haptic-tester-preset' ).val();
+		var customRaw = $( '#haptic-tester-custom' ).val();
+		var debugMode = $( '#haptic-debug-mode' ).is( ':checked' );
 		var pattern;
+
 		if ( preset === 'custom' ) {
 			pattern = parsePatternString( customRaw );
 		} else if ( wpHapticAdmin.presets[ preset ] ) {
@@ -370,28 +363,18 @@
 		var describedPattern = describeEffectivePattern( pattern, effectivePattern );
 
 		if ( Haptic && Haptic.vibrate( effectivePattern ) ) {
-			$status
-				.removeClass( 'is-error is-info' )
-				.addClass( 'is-success' )
-				.text( '✓ Haptic fired: ' + describedPattern );
+			$status.removeClass( 'is-error is-info' ).addClass( 'is-success' ).text( '✓ Haptic fired: ' + describedPattern );
 		} else if ( debugMode ) {
 			playDebugAudio( effectivePattern );
-			$status
-				.removeClass( 'is-error is-success' )
-				.addClass( 'is-info' )
-				.text( '🔊 Debug: played audio for ' + describedPattern );
+			$status.removeClass( 'is-error is-success' ).addClass( 'is-info' ).text( '🔊 Debug: played audio for ' + describedPattern );
 		} else {
-			$status
-				.removeClass( 'is-success is-info' )
-				.addClass( 'is-error' )
-				.text( '⚠ ' + wpHapticAdmin.i18n.noVibration );
+			$status.removeClass( 'is-success is-info' ).addClass( 'is-error' ).text( '⚠ ' + wpHapticAdmin.i18n.noVibration );
 		}
 
 		$btn.addClass( 'haptic-btn--loading' );
-		var total = effectivePattern.reduce( function ( a, b ) { return a + b; }, 0 );
 		setTimeout( function () {
 			$btn.removeClass( 'haptic-btn--loading' );
-		}, Math.max( total, 500 ) );
+		}, Math.max( effectivePattern.reduce( function ( a, b ) { return a + b; }, 0 ), 500 ) );
 
 		setTimeout( function () {
 			$status.removeClass( 'is-success is-error is-info' ).text( '' );

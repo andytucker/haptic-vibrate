@@ -8,19 +8,20 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Add haptic feedback to site elements using CSS selectors or a plugin-defined class, with a modern admin UI and desktop debug mode.
+Add haptic feedback to site elements using CSS selectors or auto-generated pattern classes, with a modern admin UI and desktop debug mode.
 
 == Description ==
 
-WP Haptic Vibrate lets you map CSS selectors or a plugin class to vibration patterns supported by mobile browsers.
+WP Haptic Vibrate lets you map CSS selectors or generated pattern classes to vibration patterns supported by mobile browsers.
 
 Features include:
 
 * CSS selector-based vibration rules
-* Optional plugin class for easy theme or block integration
+* Auto-generated per-pattern classes for easy theme or block integration
 * Built-in presets plus custom patterns
 * Android vibration support and iOS Safari 17.4+ pulse fallback
 * Desktop debug mode with audio and visual feedback
+* Automatic interaction listening for clicks, taps, and keyboard activation
 * Drag-and-drop admin rule ordering
 * Translation-ready text domain and POT file
 
@@ -49,7 +50,7 @@ Uninstalling the plugin removes the saved `wp_haptic_vibrate_settings` option fr
 
 = 1.0.0 =
 * Initial public release.
-* Added selector rules, plugin class targeting, haptic presets, desktop debug mode, and cross-platform haptic core.
+* Added selector rules, generated pattern classes, haptic presets, desktop debug mode, and cross-platform haptic core.
 
 == Upgrade Notice ==
 

@@ -1,6 +1,6 @@
 {
   "name": "andytucker/wp-haptic-vibrate",
-  "description": "WordPress plugin that adds mobile haptic feedback to elements via selectors or a plugin-defined class.",
+  "description": "WordPress plugin that adds mobile haptic feedback to elements via selectors or generated pattern classes.",
   "type": "project",
   "license": "GPL-2.0-or-later",
   "require": {},

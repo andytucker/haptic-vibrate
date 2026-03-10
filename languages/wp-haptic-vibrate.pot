@@ -67,27 +67,11 @@ msgid "Unauthorised."
 msgstr ""
 
 #: admin/class-admin.php
-msgid "Click / Tap"
-msgstr ""
-
-#: admin/class-admin.php
-msgid "Mouse Down"
-msgstr ""
-
-#: admin/class-admin.php
-msgid "Touch Start"
-msgstr ""
-
-#: admin/class-admin.php
 msgid "CSS Selector"
 msgstr ""
 
 #: admin/class-admin.php
-msgid "Also target the plugin class"
-msgstr ""
-
-#: admin/class-admin.php
-msgid "Use Plugin Class"
+msgid "Pattern Class"
 msgstr ""
 
 #: admin/class-admin.php
@@ -96,10 +80,6 @@ msgstr ""
 
 #: admin/class-admin.php
 msgid "Custom Pattern (ms)"
-msgstr ""
-
-#: admin/class-admin.php
-msgid "Trigger Event"
 msgstr ""
 
 #: admin/class-admin.php
@@ -119,27 +99,11 @@ msgid "Vibration Rules"
 msgstr ""
 
 #: admin/partials/admin-display.php
-msgid "Map CSS selectors or the plugin class to vibration patterns. Each rule fires when the user interacts with a matching element."
+msgid "Map CSS selectors or generated pattern classes to vibration patterns. Each rule listens for common user interactions on matching elements."
 msgstr ""
 
 #: admin/partials/admin-display.php
 msgid "No rules yet. Click \"Add Rule\" to get started."
-msgstr ""
-
-#: admin/partials/admin-display.php
-msgid "Add Rule"
-msgstr ""
-
-#: admin/partials/admin-display.php
-msgid "Plugin Class"
-msgstr ""
-
-#: admin/partials/admin-display.php
-msgid "Add this CSS class to any HTML element to apply the matching rule that has \"Use Plugin Class\" enabled."
-msgstr ""
-
-#: admin/partials/admin-display.php
-msgid "Class name"
 msgstr ""
 
 #: admin/partials/admin-display.php

@@ -11,6 +11,7 @@
     "wp-coding-standards/wpcs": "^3.1"
   },
   "scripts": {
+    "build-release": "php scripts/build-release.php",
     "phpcs": "phpcs",
     "phpcbf": "phpcbf",
     "lint": "phpcs"

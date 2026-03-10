@@ -95,14 +95,27 @@
 	display: flex;
 	flex-direction: column;
 	gap: 18px;
+	align-self: start;
+}
+
+@media (min-width: 901px) {
+	.haptic-col--sidebar {
+		position: sticky;
+		top: 32px;
+	}
 }
 
 .haptic-card--compact .haptic-card__body {
 	padding: 16px 20px;
 }
 
+.haptic-card--compact .haptic-card__body > :last-child {
+	margin-bottom: 0;
+}
+
 .haptic-card--save {
 	border-color: var(--haptic-primary);
+	box-shadow: 0 12px 28px rgb(79 70 229 / 0.12);
 }
 
 .haptic-card__header {
@@ -173,6 +186,16 @@
 	color: var(--haptic-text-muted);
 	line-height: 1.5;
 	margin: 0 0 12px;
+}
+
+.haptic-sidebar-actions {
+	display: flex;
+	width: 100%;
+	margin-top: 12px;
+}
+
+.haptic-sidebar-actions--save {
+	margin-top: 0;
 }
 
 .haptic-invisible {
@@ -367,6 +390,11 @@
 	border-radius: var(--haptic-radius-sm) !important;
 }
 
+.haptic-save-btn {
+	min-height: 42px;
+	width: 100%;
+}
+
 .haptic-save-btn.button-primary:hover {
 	background: linear-gradient(135deg, var(--haptic-primary-dark) 0%, var(--haptic-accent-dark) 100%) !important;
 	border-color: var(--haptic-primary-dark) !important;
@@ -538,7 +566,7 @@
 }
 
 #haptic-tester-btn {
-	margin-top: 12px;
+	min-height: 42px;
 }
 
 .haptic-tester-status.is-success {

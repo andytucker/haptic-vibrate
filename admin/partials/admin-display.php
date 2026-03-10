@@ -85,7 +85,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div><!-- /.haptic-col--main -->
 
 			<!-- ── Right column ─────────────────────────────────────── -->
-			<div class="haptic-col haptic-col--sidebar">
+			<aside class="haptic-col haptic-col--sidebar" aria-label="<?php esc_attr_e( 'Plugin tools and actions', 'wp-haptic-vibrate' ); ?>">
 
 				<!-- Debug Mode Card -->
 				<div class="haptic-card haptic-card--compact" id="haptic-debug-card">
@@ -166,10 +166,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 							/>
 						</div>
 
-						<button type="button" id="haptic-tester-btn" class="haptic-btn haptic-btn--accent haptic-btn--full">
-							<span class="dashicons dashicons-controls-play" aria-hidden="true"></span>
-							<?php esc_html_e( 'Test Pattern', 'wp-haptic-vibrate' ); ?>
-						</button>
+						<div class="haptic-sidebar-actions">
+							<button type="button" id="haptic-tester-btn" class="haptic-btn haptic-btn--accent haptic-btn--full">
+								<span class="dashicons dashicons-controls-play" aria-hidden="true"></span>
+								<?php esc_html_e( 'Test Pattern', 'wp-haptic-vibrate' ); ?>
+							</button>
+						</div>
 
 						<div id="haptic-tester-status" class="haptic-tester-status" role="status" aria-live="polite"></div>
 					</div>
@@ -178,11 +180,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<!-- Save Changes -->
 				<div class="haptic-card haptic-card--compact haptic-card--save">
 					<div class="haptic-card__body">
-						<?php submit_button( __( 'Save Settings', 'wp-haptic-vibrate' ), 'haptic-btn haptic-btn--primary haptic-btn--full haptic-save-btn', 'submit', false ); ?>
+						<div class="haptic-sidebar-actions haptic-sidebar-actions--save">
+							<button type="submit" name="submit" class="haptic-btn haptic-btn--primary haptic-btn--full haptic-save-btn">
+								<?php esc_html_e( 'Save Settings', 'wp-haptic-vibrate' ); ?>
+							</button>
+						</div>
 					</div>
 				</div>
 
-			</div><!-- /.haptic-col--sidebar -->
+			</aside><!-- /.haptic-col--sidebar -->
 
 		</div><!-- /.haptic-grid -->
 

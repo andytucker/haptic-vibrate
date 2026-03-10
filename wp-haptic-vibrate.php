@@ -3,8 +3,8 @@
  * WP Haptic Vibrate
  *
  * @package           WP_Haptic_Vibrate
- * @author            Andy Tucker
- * @copyright         2024 Andy Tucker
+ * @author            Victor Pilyasinsky
+ * @copyright         2024 Victor Pilyasinsky
  * @license           GPL-2.0-or-later
  *
  * @wordpress-plugin
@@ -14,7 +14,7 @@
  * Version:           1.0.0
  * Requires at least: 5.9
  * Requires PHP:      7.4
- * Author:            Andy Tucker
+ * Author:            Victor Pilyasinsky
  * Author URI:        https://github.com/andytucker
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.txt

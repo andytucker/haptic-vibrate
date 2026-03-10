@@ -1,4 +1,4 @@
-# Copyright (C) 2024 Andy Tucker
+# Copyright (C) 2024 Victor Pilyasinsky
 # This file is distributed under the same license as the WP Haptic Vibrate plugin.
 msgid ""
 msgstr ""
@@ -27,7 +27,7 @@ msgid "Enable mobile haptic vibration feedback on any element via CSS class sele
 msgstr ""
 
 #. Author of the plugin
-msgid "Andy Tucker"
+msgid "Victor Pilyasinsky"
 msgstr ""
 
 #: admin/class-admin.php

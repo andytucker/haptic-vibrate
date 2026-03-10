@@ -7,73 +7,202 @@ $root_dir    = dirname(__DIR__);
 $source_dir  = $root_dir . DIRECTORY_SEPARATOR . 'dist' . DIRECTORY_SEPARATOR . 'package' . DIRECTORY_SEPARATOR . $plugin_slug;
 $zip_path    = $root_dir . DIRECTORY_SEPARATOR . 'dist' . DIRECTORY_SEPARATOR . $plugin_slug . '.zip';
 
-if ( ! is_dir( $source_dir ) ) {
-	fwrite( STDERR, "Release package source not found: {$source_dir}" . PHP_EOL );
+/**
+ * Write an error message and stop the build.
+ *
+ * @param string $message Error message.
+ */
+function fail_build( $message ) {
+	fwrite( STDERR, $message . PHP_EOL );
 	exit( 1 );
 }
 
+/**
+ * Normalize ZIP entry paths to portable forward-slash form.
+ *
+ * @param string $path Archive entry path.
+ * @return string
+ */
+function normalize_zip_entry_path( $path ) {
+	$path = str_replace( array( '\\', '/' ), '/', $path );
+	$path = preg_replace( '#/+#', '/', $path );
+
+	return ltrim( $path, '/' );
+}
+
+/**
+ * Build the release ZIP with ZipArchive.
+ *
+ * @param string $source_dir Package source directory.
+ * @param string $zip_path   Output ZIP path.
+ */
+function build_release_archive_with_ziparchive( $source_dir, $zip_path ) {
+	$zip = new ZipArchive();
+
+	if ( file_exists( $zip_path ) && ! unlink( $zip_path ) ) {
+		fail_build( "Unable to remove existing archive: {$zip_path}" );
+	}
+
+	if ( true !== $zip->open( $zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE ) ) {
+		fail_build( "Unable to create release archive: {$zip_path}" );
+	}
+
+	$source_parent = dirname( $source_dir );
+	$iterator      = new RecursiveIteratorIterator(
+		new RecursiveDirectoryIterator( $source_dir, FilesystemIterator::SKIP_DOTS ),
+		RecursiveIteratorIterator::SELF_FIRST
+	);
+
+	foreach ( $iterator as $item ) {
+		$full_path  = $item->getPathname();
+		$local_path = substr( $full_path, strlen( $source_parent ) + 1 );
+		$local_path = normalize_zip_entry_path( $local_path );
+
+		if ( $item->isDir() ) {
+			$zip->addEmptyDir( $local_path );
+			continue;
+		}
+
+		$zip->addFile( $full_path, $local_path );
+	}
+
+	$zip->close();
+}
+
+/**
+ * Build the release ZIP with PowerShell/.NET on Windows.
+ *
+ * ZipArchive on Windows can still produce backslash entry names in the ZIP
+ * central directory even when forward slashes are provided, which causes
+ * WordPress to report that the plugin file cannot be found.
+ *
+ * @param string $source_dir Package source directory.
+ * @param string $zip_path   Output ZIP path.
+ */
+function build_release_archive_with_powershell( $source_dir, $zip_path ) {
+	$script_path = dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'build-release.ps1';
+
+	if ( ! is_file( $script_path ) ) {
+		fail_build( "Windows release packaging script not found: {$script_path}" );
+	}
+
+	$command = sprintf(
+		'powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File %s -SourceDir %s -ZipPath %s 2>&1',
+		escapeshellarg( $script_path ),
+		escapeshellarg( $source_dir ),
+		escapeshellarg( $zip_path )
+	);
+
+	$output    = array();
+	$exit_code = 0;
+	exec( $command, $output, $exit_code );
+
+	if ( 0 !== $exit_code ) {
+		fail_build( 'Unable to create release archive with PowerShell: ' . implode( PHP_EOL, $output ) );
+	}
+}
+
+/**
+ * Read ZIP central directory entry names without path normalization.
+ *
+ * @param string $zip_path ZIP archive path.
+ * @return array<int, string>
+ */
+function get_raw_zip_entry_names( $zip_path ) {
+	$zip_contents = file_get_contents( $zip_path );
+
+	if ( false === $zip_contents ) {
+		fail_build( "Unable to read release archive for verification: {$zip_path}" );
+	}
+
+	$entries = array();
+	$offset  = 0;
+
+	while ( false !== $offset ) {
+		$offset = strpos( $zip_contents, "PK\x01\x02", $offset );
+
+		if ( false === $offset ) {
+			break;
+		}
+
+		$header = substr( $zip_contents, $offset, 46 );
+
+		if ( 46 !== strlen( $header ) ) {
+			fail_build( 'Archive verification failed because the ZIP central directory is truncated.' );
+		}
+
+		$name_length_data    = unpack( 'v', substr( $header, 28, 2 ) );
+		$extra_length_data   = unpack( 'v', substr( $header, 30, 2 ) );
+		$comment_length_data = unpack( 'v', substr( $header, 32, 2 ) );
+
+		$name_length    = (int) $name_length_data[1];
+		$extra_length   = (int) $extra_length_data[1];
+		$comment_length = (int) $comment_length_data[1];
+
+		$entry_name = substr( $zip_contents, $offset + 46, $name_length );
+
+		if ( $name_length !== strlen( $entry_name ) ) {
+			fail_build( 'Archive verification failed because a ZIP entry name is truncated.' );
+		}
+
+		$entries[] = $entry_name;
+		$offset   += 46 + $name_length + $extra_length + $comment_length;
+	}
+
+	if ( empty( $entries ) ) {
+		fail_build( 'Archive verification failed because no ZIP entries were found.' );
+	}
+
+	return $entries;
+}
+
+if ( ! is_dir( $source_dir ) ) {
+	fail_build( "Release package source not found: {$source_dir}" );
+}
+
 if ( ! class_exists( 'ZipArchive' ) ) {
-	fwrite( STDERR, 'The PHP zip extension is required to build the release archive.' . PHP_EOL );
-	exit( 1 );
+	fail_build( 'The PHP zip extension is required to build the release archive.' );
 }
 
 $source_dir = realpath( $source_dir );
 
 if ( false === $source_dir ) {
-	fwrite( STDERR, 'Unable to resolve the release package source directory.' . PHP_EOL );
-	exit( 1 );
+	fail_build( 'Unable to resolve the release package source directory.' );
 }
 
-$zip = new ZipArchive();
+$main_plugin_file = $source_dir . DIRECTORY_SEPARATOR . $plugin_slug . '.php';
 
-if ( file_exists( $zip_path ) && ! unlink( $zip_path ) ) {
-	fwrite( STDERR, "Unable to remove existing archive: {$zip_path}" . PHP_EOL );
-	exit( 1 );
+if ( ! is_file( $main_plugin_file ) ) {
+	fail_build( "Release package main plugin file not found: {$main_plugin_file}" );
 }
 
-if ( true !== $zip->open( $zip_path, ZipArchive::CREATE | ZipArchive::OVERWRITE ) ) {
-	fwrite( STDERR, "Unable to create release archive: {$zip_path}" . PHP_EOL );
-	exit( 1 );
+if ( '\\' === DIRECTORY_SEPARATOR ) {
+	build_release_archive_with_powershell( $source_dir, $zip_path );
+} else {
+	build_release_archive_with_ziparchive( $source_dir, $zip_path );
 }
 
-$source_parent = dirname( $source_dir );
-$iterator      = new RecursiveIteratorIterator(
-	new RecursiveDirectoryIterator( $source_dir, FilesystemIterator::SKIP_DOTS ),
-	RecursiveIteratorIterator::SELF_FIRST
-);
+$raw_entry_names = get_raw_zip_entry_names( $zip_path );
+$has_main_file   = false;
 
-foreach ( $iterator as $item ) {
-	$full_path = $item->getPathname();
-	$local_path = substr( $full_path, strlen( $source_parent ) + 1 );
-	$local_path = str_replace( DIRECTORY_SEPARATOR, '/', $local_path );
-
-	if ( $item->isDir() ) {
-		$zip->addEmptyDir( $local_path );
-		continue;
-	}
-
-	$zip->addFile( $full_path, $local_path );
-}
-
-$zip->close();
-
-$verification_zip = new ZipArchive();
-
-if ( true !== $verification_zip->open( $zip_path ) ) {
-	fwrite( STDERR, "Unable to reopen release archive for verification: {$zip_path}" . PHP_EOL );
-	exit( 1 );
-}
-
-for ( $index = 0; $index < $verification_zip->numFiles; $index++ ) {
-	$entry_name = $verification_zip->getNameIndex( $index );
+foreach ( $raw_entry_names as $entry_name ) {
+	$normalized_entry_name = normalize_zip_entry_path( $entry_name );
 
 	if ( false !== strpos( $entry_name, '\\' ) ) {
-		$verification_zip->close();
-		fwrite( STDERR, "Archive verification failed because entry uses backslashes: {$entry_name}" . PHP_EOL );
-		exit( 1 );
+		fail_build( "Archive verification failed because entry uses backslashes: {$entry_name}" );
+	}
+
+	if ( 0 !== strpos( $normalized_entry_name, $plugin_slug . '/' ) ) {
+		fail_build( "Archive verification failed because entry is not inside the plugin root folder: {$entry_name}" );
+	}
+
+	if ( $plugin_slug . '/' . $plugin_slug . '.php' === $normalized_entry_name ) {
+		$has_main_file = true;
 	}
 }
 
-$verification_zip->close();
+if ( ! $has_main_file ) {
+	fail_build( 'Archive verification failed because the main plugin file is missing from the release ZIP.' );
+}
 
 fwrite( STDOUT, "Built release archive: {$zip_path}" . PHP_EOL );

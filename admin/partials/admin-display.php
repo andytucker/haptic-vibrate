@@ -128,63 +128,62 @@ if ( ! defined( 'ABSPATH' ) ) {
 					</div>
 				</div>
 
-				<!-- Pattern Tester Card -->
-				<div class="haptic-card haptic-card--compact" id="haptic-tester-card">
+				<!-- Tools Card -->
+				<div class="haptic-card haptic-card--compact haptic-card--tools" id="haptic-tester-card">
 					<div class="haptic-card__header">
 						<h2 class="haptic-card__title">
 							<span class="dashicons dashicons-controls-play" aria-hidden="true"></span>
-							<?php esc_html_e( 'Pattern Tester', 'wp-haptic-vibrate' ); ?>
+							<?php esc_html_e( 'Pattern Tester & Save', 'wp-haptic-vibrate' ); ?>
 						</h2>
 					</div>
 					<div class="haptic-card__body">
-						<p class="haptic-field__help">
-							<?php esc_html_e( 'Quickly preview any pattern on this device.', 'wp-haptic-vibrate' ); ?>
-						</p>
+						<section class="haptic-panel-section haptic-panel-section--tester">
+							<p class="haptic-field__help">
+								<?php esc_html_e( 'Quickly preview any pattern on this device.', 'wp-haptic-vibrate' ); ?>
+							</p>
 
-						<div class="haptic-field">
-							<label for="haptic-tester-preset" class="haptic-field__label">
-								<?php esc_html_e( 'Preset', 'wp-haptic-vibrate' ); ?>
-							</label>
-							<select id="haptic-tester-preset" class="haptic-select">
-								<?php foreach ( WP_Haptic_Vibrate_Admin::$presets as $key => $preset ) : ?>
-									<option value="<?php echo esc_attr( $key ); ?>">
-										<?php echo esc_html( $preset['label'] ); ?>
-									</option>
-								<?php endforeach; ?>
-							</select>
-						</div>
+							<div class="haptic-field">
+								<label for="haptic-tester-preset" class="haptic-field__label">
+									<?php esc_html_e( 'Preset', 'wp-haptic-vibrate' ); ?>
+								</label>
+								<select id="haptic-tester-preset" class="haptic-select">
+									<?php foreach ( WP_Haptic_Vibrate_Admin::$presets as $key => $preset ) : ?>
+										<option value="<?php echo esc_attr( $key ); ?>">
+											<?php echo esc_html( $preset['label'] ); ?>
+										</option>
+									<?php endforeach; ?>
+								</select>
+							</div>
 
-						<div class="haptic-field" id="haptic-tester-custom-wrap" style="display:none;">
-							<label for="haptic-tester-custom" class="haptic-field__label">
-								<?php esc_html_e( 'Custom pattern (ms, comma-separated)', 'wp-haptic-vibrate' ); ?>
-							</label>
-							<input
-								type="text"
-								id="haptic-tester-custom"
-								class="haptic-input"
-								placeholder="200,100,200"
-							/>
-						</div>
+							<div class="haptic-field" id="haptic-tester-custom-wrap" style="display:none;">
+								<label for="haptic-tester-custom" class="haptic-field__label">
+									<?php esc_html_e( 'Custom pattern (ms, comma-separated)', 'wp-haptic-vibrate' ); ?>
+								</label>
+								<input
+									type="text"
+									id="haptic-tester-custom"
+									class="haptic-input"
+									placeholder="200,100,200"
+								/>
+							</div>
 
-						<div class="haptic-sidebar-actions">
-							<button type="button" id="haptic-tester-btn" class="haptic-btn haptic-btn--accent haptic-btn--full">
-								<span class="dashicons dashicons-controls-play" aria-hidden="true"></span>
-								<?php esc_html_e( 'Test Pattern', 'wp-haptic-vibrate' ); ?>
-							</button>
-						</div>
+							<div class="haptic-sidebar-actions">
+								<button type="button" id="haptic-tester-btn" class="haptic-btn haptic-btn--primary haptic-btn--full">
+									<span class="dashicons dashicons-controls-play" aria-hidden="true"></span>
+									<?php esc_html_e( 'Test Pattern', 'wp-haptic-vibrate' ); ?>
+								</button>
+							</div>
 
-						<div id="haptic-tester-status" class="haptic-tester-status" role="status" aria-live="polite"></div>
-					</div>
-				</div>
+							<div id="haptic-tester-status" class="haptic-tester-status" role="status" aria-live="polite"></div>
+						</section>
 
-				<!-- Save Changes -->
-				<div class="haptic-card haptic-card--compact haptic-card--save">
-					<div class="haptic-card__body">
-						<div class="haptic-sidebar-actions haptic-sidebar-actions--save">
-							<button type="submit" name="submit" class="haptic-btn haptic-btn--primary haptic-btn--full haptic-save-btn">
-								<?php esc_html_e( 'Save Settings', 'wp-haptic-vibrate' ); ?>
-							</button>
-						</div>
+						<section class="haptic-panel-section haptic-panel-section--save">
+							<div class="haptic-sidebar-actions haptic-sidebar-actions--save">
+								<button type="submit" name="submit" class="haptic-btn haptic-btn--primary haptic-btn--full haptic-save-btn">
+									<?php esc_html_e( 'Save Settings', 'wp-haptic-vibrate' ); ?>
+								</button>
+							</div>
+						</section>
 					</div>
 				</div>
 

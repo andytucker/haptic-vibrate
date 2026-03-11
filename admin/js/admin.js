@@ -155,7 +155,9 @@
 
 	function refreshClassPreview( $row ) {
 		var preset = $row.find( '.haptic-rule__preset' ).val();
-		$row.find( '.haptic-rule__class-preview' ).val( buildRuleClassName( preset, getRowIndex( $row ) ) );
+		var className = buildRuleClassName( preset, getRowIndex( $row ) );
+
+		$row.find( '.haptic-rule__class-preview' ).val( className ).attr( 'value', className );
 	}
 
 	var $rulesList   = $( '#haptic-rules-list' );
@@ -229,6 +231,8 @@
 	}
 
 	function bindRuleRow( $row ) {
+		refreshClassPreview( $row );
+
 		$row.on( 'change', '.haptic-rule__preset', function () {
 			var preset  = $( this ).val();
 			var $custom = $row.find( '.haptic-field--custom' );
@@ -238,6 +242,10 @@
 
 		$row.on( 'input', '.haptic-rule__custom-pattern', function () {
 			refreshRowBadge( $row );
+		} );
+
+		$row.on( 'change input', '.haptic-rule__selector', function () {
+			refreshClassPreview( $row );
 		} );
 
 		$row.on( 'click', '.haptic-rule__remove-btn', function () {

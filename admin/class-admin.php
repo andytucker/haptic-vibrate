@@ -90,11 +90,15 @@ class WP_Haptic_Vibrate_Admin {
 		if ( ! $this->is_plugin_page( $hook_suffix ) ) {
 			return;
 		}
+
+		$style_path = WP_HAPTIC_VIBRATE_PLUGIN_DIR . 'admin/css/admin.css';
+		$style_ver  = file_exists( $style_path ) ? (string) filemtime( $style_path ) : $this->version;
+
 		wp_enqueue_style(
 			$this->plugin_name . '-admin',
 			WP_HAPTIC_VIBRATE_PLUGIN_URL . 'admin/css/admin.css',
 			array(),
-			$this->version,
+			$style_ver,
 			'all'
 		);
 	}
@@ -110,11 +114,16 @@ class WP_Haptic_Vibrate_Admin {
 			return;
 		}
 
+		$core_path  = WP_HAPTIC_VIBRATE_PLUGIN_DIR . 'assets/js/haptic-core.js';
+		$admin_path = WP_HAPTIC_VIBRATE_PLUGIN_DIR . 'admin/js/admin.js';
+		$core_ver   = file_exists( $core_path ) ? (string) filemtime( $core_path ) : $this->version;
+		$admin_ver  = file_exists( $admin_path ) ? (string) filemtime( $admin_path ) : $this->version;
+
 		wp_enqueue_script(
 			$this->plugin_name . '-haptic-core',
 			WP_HAPTIC_VIBRATE_PLUGIN_URL . 'assets/js/haptic-core.js',
 			array(),
-			$this->version,
+			$core_ver,
 			true
 		);
 
@@ -122,7 +131,7 @@ class WP_Haptic_Vibrate_Admin {
 			$this->plugin_name . '-admin',
 			WP_HAPTIC_VIBRATE_PLUGIN_URL . 'admin/js/admin.js',
 			array( 'jquery', $this->plugin_name . '-haptic-core' ),
-			$this->version,
+			$admin_ver,
 			true
 		);
 
@@ -360,6 +369,7 @@ class WP_Haptic_Vibrate_Admin {
 								type="text"
 								value="<?php echo esc_attr( $class_name ); ?>"
 								class="haptic-input haptic-rule__class-preview"
+								data-preview-for="<?php echo esc_attr( $idx ); ?>"
 								readonly
 								aria-readonly="true"
 								spellcheck="false"

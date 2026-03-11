@@ -94,19 +94,19 @@
 .haptic-col--sidebar {
 	display: flex;
 	flex-direction: column;
-	gap: 18px;
+	gap: 24px;
 	align-self: start;
 }
 
 @media (min-width: 901px) {
 	.haptic-col--sidebar {
 		position: sticky;
-		top: 32px;
+		top: 24px;
 	}
 }
 
 .haptic-card--compact .haptic-card__body {
-	padding: 16px 20px;
+	padding: 20px;
 }
 
 .haptic-card--compact .haptic-card__body > :last-child {
@@ -116,6 +116,18 @@
 .haptic-card--save {
 	border-color: var(--haptic-primary);
 	box-shadow: 0 12px 28px rgb(79 70 229 / 0.12);
+}
+
+.haptic-card--tools .haptic-card__body {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.haptic-panel-section + .haptic-panel-section {
+	margin-top: 20px;
+	padding-top: 20px;
+	border-top: 1px solid var(--haptic-border);
 }
 
 .haptic-card__header {
@@ -191,7 +203,7 @@
 .haptic-sidebar-actions {
 	display: flex;
 	width: 100%;
-	margin-top: 12px;
+	margin-top: 16px;
 }
 
 .haptic-sidebar-actions--save {
@@ -374,6 +386,46 @@
 	width: 100%;
 }
 
+.haptic-btn--primary {
+	background: linear-gradient(135deg, var(--haptic-primary) 0%, var(--haptic-accent) 100%);
+	border-color: var(--haptic-primary);
+	color: #fff;
+}
+
+.haptic-btn--primary:hover {
+	background: linear-gradient(135deg, var(--haptic-primary-dark) 0%, var(--haptic-accent-dark) 100%);
+	border-color: var(--haptic-primary-dark);
+	color: #fff;
+}
+
+.haptic-btn--ghost {
+	background: var(--haptic-surface);
+	color: var(--haptic-primary);
+	border-color: var(--haptic-border);
+	box-shadow: none;
+}
+
+.haptic-btn--ghost:hover {
+	background: #eef2ff;
+	color: var(--haptic-primary-dark);
+	border-color: #c7d2fe;
+	box-shadow: none;
+}
+
+.haptic-btn--danger {
+	background: #fff;
+	color: var(--haptic-danger);
+	border-color: #fecaca;
+	box-shadow: none;
+}
+
+.haptic-btn--danger:hover {
+	background: #fef2f2;
+	color: var(--haptic-danger-dark);
+	border-color: #fca5a5;
+	box-shadow: none;
+}
+
 /* Save button override */
 .haptic-save-btn.button-primary {
 	background: linear-gradient(135deg, var(--haptic-primary) 0%, var(--haptic-accent) 100%) !important;
@@ -481,7 +533,7 @@
 .haptic-rule__row {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 10px;
+	gap: 14px;
 	align-items: flex-end;
 }
 
@@ -492,6 +544,17 @@
 .haptic-rule__remove {
 	flex-shrink: 0;
 	padding-top: 22px;
+}
+
+.haptic-rule__test-btn {
+	width: 44px;
+	min-height: 40px;
+	padding: 0;
+}
+
+.haptic-field--test {
+	flex: 0 0 44px;
+	margin-left: 4px;
 }
 
 .haptic-rule__class-preview[readonly] {
@@ -566,6 +629,7 @@
 }
 
 #haptic-tester-btn {
+	margin-top: 2px;
 	min-height: 42px;
 }
 

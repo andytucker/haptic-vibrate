@@ -16,17 +16,13 @@
 		heartbeat: [100, 100, 300, 600],
 		buzz: [500],
 		rumble: [200, 100, 200, 100, 200],
-		sos: [100, 30, 100, 30, 100, 200, 200, 30, 200, 30, 200, 200, 100, 30, 100, 30, 100],
 		notification: [50, 50, 100],
 		success: [100, 50, 200],
 		warning: [30, 30, 30],
 		error: [300, 100, 300, 100, 300],
 		custom: []
 	};
-
 	var audioContext = null;
-	var dragSource = null;
-	var ruleIndex = 0;
 
 	function $(selector, root) {
 		return (root || document).querySelector(selector);
@@ -96,9 +92,9 @@
 		}, 0);
 	}
 
-	function buildRuleClassName(preset, index) {
+	function buildRuleClassName(preset) {
 		if (preset === 'custom') {
-			return CLASS_PREFIX + 'custom-' + (index + 1);
+			return CLASS_PREFIX + 'custom-1';
 		}
 
 		return CLASS_PREFIX + (preset || 'single_short');
@@ -170,6 +166,10 @@
 
 	function setStatus(kind, message) {
 		var status = $('#demo-status');
+		if (!status) {
+			return;
+		}
+
 		status.className = 'demo-status';
 		if (kind) {
 			status.classList.add(kind);
@@ -181,27 +181,27 @@
 		if (!Haptic) {
 			return {
 				kind: 'is-info',
-				message: 'Haptic core did not load. The interface still works as a visual walkthrough, but patterns cannot fire.'
+				message: 'The haptic core did not load, so the page is running as a visual preview only.'
 			};
 		}
 
 		if (typeof Haptic.hasVibration === 'function' && Haptic.hasVibration()) {
 			return {
 				kind: 'is-success',
-				message: 'Native vibration API detected. Inline rule tests and sidebar presets should trigger real haptics on supported hardware.'
+				message: 'Native vibration support detected. Demo tests should fire real haptics on this device.'
 			};
 		}
 
 		if (typeof Haptic.hasIOSHapticFallback === 'function' && Haptic.hasIOSHapticFallback()) {
 			return {
 				kind: 'is-info',
-				message: 'iOS Safari fallback detected. Web haptics can still be browser-limited, so debug mode is useful for consistent previews.'
+				message: 'iOS Safari fallback detected. Effects may still be subtler than Android vibration.'
 			};
 		}
 
 		return {
 			kind: 'is-info',
-			message: 'This browser does not expose web haptics here. Desktop Debug Mode will use ripple and audio feedback instead.'
+			message: 'This browser does not expose web haptics here. Desktop Debug Mode will use ripple and audio feedback.'
 		};
 	}
 
@@ -220,16 +220,12 @@
 
 				lastPressAt = Date.now();
 				handler(event);
-			}, {
-				passive: true
-			});
+			}, { passive: true });
 		} else {
 			element.addEventListener('touchstart', function (event) {
 				lastPressAt = Date.now();
 				handler(event);
-			}, {
-				passive: true
-			});
+			}, { passive: true });
 		}
 
 		element.addEventListener('click', function (event) {
@@ -241,10 +237,20 @@
 		});
 	}
 
+	function getCurrentRulePattern() {
+		var preset = $('#demo-preset').value;
+
+		if (preset === 'custom') {
+			return parsePatternString($('#demo-custom-pattern').value);
+		}
+
+		return getPatternByName(preset);
+	}
+
 	function getSandboxMatches(selector) {
 		var sandbox = $('#demo-sandbox');
 
-		if (!sandbox || !selector) {
+		if (!selector) {
 			return [];
 		}
 
@@ -259,8 +265,8 @@
 		var effectivePattern = getEffectivePattern(pattern);
 		var duration = totalDuration(effectivePattern);
 		var debugMode = $('#demo-debug-mode').checked;
-		var describedPattern = describeEffectivePattern(pattern, effectivePattern);
 		var supported = Haptic && typeof Haptic.vibrate === 'function' && Haptic.vibrate(effectivePattern);
+		var describedPattern = describeEffectivePattern(pattern, effectivePattern);
 
 		options = options || {};
 
@@ -273,223 +279,61 @@
 			setStatus('is-error', 'No haptic support detected here. Turn on Desktop Debug Mode to preview the result.');
 		}
 
-		if (options.targets && options.targets.length) {
-			addRippleToElements(options.targets, duration);
-		}
-
 		if (options.primaryTarget) {
 			addRipple(options.primaryTarget, duration);
 		}
-	}
-
-	function getRowIndex(row) {
-		var index = parseInt(row.getAttribute('data-index'), 10);
-		return isNaN(index) ? 0 : index;
-	}
-
-	function resolveRowPattern(row) {
-		var preset = $('.haptic-rule__preset', row).value;
-
-		if (preset === 'custom') {
-			return parsePatternString($('.haptic-rule__custom-pattern', row).value);
+		if (options.targets && options.targets.length) {
+			addRippleToElements(options.targets, duration);
 		}
-
-		return getPatternByName(preset);
 	}
 
-	function updateGeneratedSnippet() {
-		var firstRow = $('.haptic-rule', $('#demo-rules-list'));
-		var snippet = $('#demo-generated-snippet');
-		var selectorInput;
-		var classPreview;
-		var selectorToken;
-
-		if (!firstRow || !snippet) {
-			return;
-		}
-
-		selectorInput = $('.haptic-rule__selector', firstRow);
-		classPreview = $('.haptic-rule__class-preview', firstRow);
-		selectorToken = selectorInput.value.trim().replace(/^\./, '') || 'cta-button';
-		snippet.textContent = '<button class="' + classPreview.value + ' ' + selectorToken + '">Buy now</button>';
-	}
-
-	function refreshRuleRow(row) {
-		var preset = $('.haptic-rule__preset', row).value;
-		var customWrap = $('.haptic-field--custom', row);
-		var classPreview = $('.haptic-rule__class-preview', row);
-		var selector = $('.haptic-rule__selector', row).value.trim();
-		var matchMeta = $('.haptic-rule__meta', row);
-		var badgeWrap = $('.haptic-pattern-badge', row);
-		var pattern = getEffectivePattern(resolveRowPattern(row));
+	function updateRulePreview() {
+		var selector = $('#demo-selector').value.trim();
+		var preset = $('#demo-preset').value;
+		var className = buildRuleClassName(preset);
+		var pattern = getEffectivePattern(getCurrentRulePattern());
 		var matches = getSandboxMatches(selector);
+		var selectorToken = selector.replace(/^\./, '') || 'cta-button';
 
-		customWrap.classList.toggle('haptic-hidden', preset !== 'custom');
-		classPreview.value = buildRuleClassName(preset, getRowIndex(row));
-
-		if (!badgeWrap) {
-			badgeWrap = document.createElement('span');
-			badgeWrap.className = 'haptic-pattern-badge';
-			$('.haptic-field--preset', row).appendChild(badgeWrap);
-		}
-
-		renderPatternBadge(badgeWrap, pattern);
+		$('#demo-generated-class').value = className;
+		$('#demo-custom-wrap').classList.toggle('haptic-hidden', preset !== 'custom');
+		renderPatternBadge($('#demo-pattern-badge'), pattern);
+		$('#demo-generated-snippet').textContent = '<button class="' + className + ' ' + selectorToken + '">Buy now</button>';
 
 		if (!selector) {
-			matchMeta.textContent = 'Enter a selector to preview matches in the sandbox.';
+			$('#demo-selector-meta').textContent = 'Enter a selector to preview where this rule would apply.';
 		} else if (matches === null) {
-			matchMeta.textContent = 'That selector is invalid. Try a simple class like .cta-button or .menu-link.';
+			$('#demo-selector-meta').textContent = 'That selector is invalid. Try something simple like .cta-button or .menu-link.';
 		} else if (matches.length) {
-			matchMeta.textContent = matches.length + ' sandbox element' + (matches.length === 1 ? '' : 's') + ' currently match this rule.';
+			$('#demo-selector-meta').textContent = matches.length + ' sandbox element' + (matches.length === 1 ? '' : 's') + ' currently ' + (matches.length === 1 ? 'matches' : 'match') + ' this selector.';
 		} else {
-			matchMeta.textContent = 'No sandbox elements currently match this selector, but the rule is still valid.';
+			$('#demo-selector-meta').textContent = 'No sandbox elements currently match this selector, but the rule is still valid.';
 		}
-
-		updateGeneratedSnippet();
 	}
 
-	function syncRuleRows() {
-		$all('.haptic-rule', $('#demo-rules-list')).forEach(function (row, index) {
-			row.setAttribute('data-index', String(index));
-			refreshRuleRow(row);
-		});
+	function initRuleDemo() {
+		$('#demo-preset').addEventListener('change', updateRulePreview);
+		$('#demo-custom-pattern').addEventListener('input', updateRulePreview);
+		$('#demo-selector').addEventListener('input', updateRulePreview);
 
-		ruleIndex = $all('.haptic-rule', $('#demo-rules-list')).length;
-		$('#demo-rules-empty').classList.toggle('haptic-hidden', ruleIndex !== 0);
-	}
-
-	function buildNewRuleRow() {
-		var template = $('#demo-rule-template');
-		var html = template.innerHTML.replace(/\{\{INDEX\}\}/g, String(ruleIndex));
-		var wrapper = document.createElement('div');
-		wrapper.innerHTML = html.trim();
-		return wrapper.firstElementChild;
-	}
-
-	function bindRuleRow(row) {
-		$('.haptic-rule__preset', row).addEventListener('change', function () {
-			refreshRuleRow(row);
-		});
-
-		$('.haptic-rule__custom-pattern', row).addEventListener('input', function () {
-			refreshRuleRow(row);
-		});
-
-		$('.haptic-rule__selector', row).addEventListener('input', function () {
-			refreshRuleRow(row);
-		});
-
-		$('.haptic-rule__remove-btn', row).addEventListener('click', function () {
-			row.remove();
-			syncRuleRows();
-			setStatus('is-info', 'Rule removed from the demo interface. In the real plugin, you would save to persist the change.');
-		});
-
-		bindPressInteraction($('.haptic-rule__test-btn', row), function () {
-			var selector = $('.haptic-rule__selector', row).value.trim();
+		bindPressInteraction($('#demo-rule-test'), function () {
+			var selector = $('#demo-selector').value.trim();
 			var matches = getSandboxMatches(selector);
-			var pattern = resolveRowPattern(row);
-			var description = describeEffectivePattern(pattern, getEffectivePattern(pattern));
+			var pattern = getCurrentRulePattern();
+			var describedPattern = describeEffectivePattern(pattern, getEffectivePattern(pattern));
 
 			if (matches === null) {
-				setStatus('is-error', 'The selector for this rule is invalid, so the demo cannot test it against the sandbox.');
+				setStatus('is-error', 'That selector is invalid, so the demo cannot test it against the sandbox.');
 				return;
 			}
 
 			triggerPattern(pattern, {
-				primaryTarget: $('.haptic-rule__test-btn', row),
+				primaryTarget: $('#demo-rule-test'),
 				targets: matches || [],
 				statusMessage: matches && matches.length
-					? 'Tested ' + description + ' against ' + matches.length + ' matching sandbox element' + (matches.length === 1 ? '' : 's') + '.'
-					: 'Tested ' + description + '. No current sandbox elements match this selector.'
+					? 'Tested ' + describedPattern + ' against ' + matches.length + ' matching sandbox element' + (matches.length === 1 ? '' : 's') + '.'
+					: 'Tested ' + describedPattern + '. No current sandbox elements match this selector.'
 			});
-		});
-	}
-
-	function addRuleRow() {
-		var row = buildNewRuleRow();
-		$('#demo-rules-list').appendChild(row);
-		bindRuleRow(row);
-		ruleIndex += 1;
-		syncRuleRows();
-		row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-		$('.haptic-rule__selector', row).focus();
-		setStatus('is-info', 'Added a new demo rule. Adjust the selector and preset, then test it inline.');
-	}
-
-	function initRuleRows() {
-		$all('.haptic-rule', $('#demo-rules-list')).forEach(function (row) {
-			bindRuleRow(row);
-			refreshRuleRow(row);
-		});
-
-		ruleIndex = $all('.haptic-rule', $('#demo-rules-list')).length;
-	}
-
-	function initDragAndDrop() {
-		var list = $('#demo-rules-list');
-
-		list.addEventListener('dragstart', function (event) {
-			var row = event.target.closest('.haptic-rule');
-			if (!row) {
-				return;
-			}
-
-			dragSource = row;
-			event.dataTransfer.effectAllowed = 'move';
-			event.dataTransfer.setData('text/plain', '');
-			window.setTimeout(function () {
-				row.classList.add('haptic-rule--dragging');
-			}, 0);
-		});
-
-		list.addEventListener('dragover', function (event) {
-			var row = event.target.closest('.haptic-rule');
-			var rect;
-			var midpoint;
-
-			event.preventDefault();
-			if (!row || row === dragSource) {
-				return;
-			}
-
-			rect = row.getBoundingClientRect();
-			midpoint = rect.top + rect.height / 2;
-
-			if (event.clientY < midpoint) {
-				list.insertBefore(dragSource, row);
-			} else {
-				list.insertBefore(dragSource, row.nextSibling);
-			}
-		});
-
-		list.addEventListener('dragend', function () {
-			if (!dragSource) {
-				return;
-			}
-
-			dragSource.classList.remove('haptic-rule--dragging');
-			dragSource = null;
-			syncRuleRows();
-			setStatus('is-info', 'Rule order updated. The real plugin saves this layout when you submit settings.');
-		});
-
-		list.addEventListener('mousedown', function (event) {
-			var handle = event.target.closest('.haptic-rule__handle');
-			if (!handle) {
-				return;
-			}
-
-			handle.closest('.haptic-rule').setAttribute('draggable', 'true');
-		});
-
-		list.addEventListener('mouseup', function (event) {
-			var handle = event.target.closest('.haptic-rule__handle');
-			if (!handle) {
-				return;
-			}
-
-			handle.closest('.haptic-rule').removeAttribute('draggable');
 		});
 	}
 
@@ -497,34 +341,28 @@
 		$all('.demo-target-card', $('#demo-sandbox')).forEach(function (card) {
 			bindPressInteraction(card, function (event) {
 				var target = event.currentTarget;
-				var matchedRows = $all('.haptic-rule', $('#demo-rules-list')).filter(function (row) {
-					var selector = $('.haptic-rule__selector', row).value.trim();
-					var matches = getSandboxMatches(selector);
-					return Array.isArray(matches) && matches.indexOf(target) !== -1;
-				});
-				var row;
-				var pattern;
+				var selector = $('#demo-selector').value.trim();
+				var matches = getSandboxMatches(selector);
+				var pattern = getCurrentRulePattern();
 
-				if (!matchedRows.length) {
-					setStatus('is-info', 'This sandbox element does not currently match any demo rules.');
+				if (!Array.isArray(matches) || matches.indexOf(target) === -1) {
+					setStatus('is-info', 'This sample element does not match the current selector rule.');
 					addRipple(target, 400);
 					return;
 				}
 
-				row = matchedRows[0];
-				pattern = resolveRowPattern(row);
 				triggerPattern(pattern, {
 					primaryTarget: target,
-					statusMessage: 'Sandbox interaction matched ' + $('.haptic-rule__selector', row).value.trim() + ' and fired ' + describeEffectivePattern(pattern, getEffectivePattern(pattern)) + '.'
+					statusMessage: 'This element matches ' + selector + ' and fired ' + describeEffectivePattern(pattern, getEffectivePattern(pattern)) + '.'
 				});
 			});
 		});
 	}
 
-	function initSidebar() {
+	function initSidebarTester() {
 		$('#demo-debug-mode').addEventListener('change', function () {
 			$('#demo-debug-preview').classList.toggle('is-visible', this.checked);
-			setStatus('', this.checked ? 'Desktop Debug Mode is on. Tests will use ripple/audio fallback when needed.' : 'Desktop Debug Mode is off. Tests now rely on native haptic support only.');
+			setStatus('', this.checked ? 'Desktop Debug Mode is on. The demo will use ripple and audio fallback when needed.' : 'Desktop Debug Mode is off. The demo now relies on native haptic support only.');
 		});
 
 		$('#demo-tester-preset').addEventListener('change', function () {
@@ -534,9 +372,8 @@
 		bindPressInteraction($('#demo-tester-btn'), function () {
 			var preset = $('#demo-tester-preset').value;
 			var pattern = preset === 'custom' ? parsePatternString($('#demo-tester-custom').value) : getPatternByName(preset);
-			var effectivePattern = getEffectivePattern(pattern);
-			var describedPattern = describeEffectivePattern(pattern, effectivePattern);
 			var testerStatus = $('#demo-tester-status');
+			var describedPattern = describeEffectivePattern(pattern, getEffectivePattern(pattern));
 
 			triggerPattern(pattern, {
 				primaryTarget: $('#demo-tester-btn')
@@ -544,30 +381,18 @@
 
 			testerStatus.className = 'haptic-tester-status is-info';
 			testerStatus.textContent = 'Tester preview: ' + describedPattern;
+
 			window.setTimeout(function () {
 				testerStatus.className = 'haptic-tester-status';
 				testerStatus.textContent = '';
 			}, 5000);
 		});
-
-		$('#demo-save-btn').addEventListener('click', function () {
-			setStatus('is-info', 'Demo only: the real plugin saves rules, debug mode, and preset choices through the WordPress settings page.');
-			addRipple(this, 700);
-		});
 	}
 
-	function initAddRule() {
-		$('#demo-add-rule').addEventListener('click', function () {
-			addRuleRow();
-		});
-	}
-
-	initRuleRows();
-	initDragAndDrop();
+	initRuleDemo();
 	initSandbox();
-	initSidebar();
-	initAddRule();
-	updateGeneratedSnippet();
+	initSidebarTester();
+	updateRulePreview();
 
 	var support = describeSupport();
 	setStatus(support.kind, support.message);

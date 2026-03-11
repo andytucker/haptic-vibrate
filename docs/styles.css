@@ -646,24 +646,30 @@ code {
 	height: 100%;
 }
 
-.demo-screenshot-placeholder {
+
+.demo-screenshot-figure {
 	display: grid;
 	gap: 14px;
+	margin: 0;
 }
 
-.demo-screenshot-placeholder__frame {
-	display: grid;
-	place-items: center;
-	min-height: 280px;
-	padding: 20px;
+
+.demo-screenshot-image {
+	display: block;
+	width: 100%;
+	height: auto;
 	border-radius: 18px;
-	border: 2px dashed rgb(79 70 229 / 0.25);
+	border: 1px solid rgb(79 70 229 / 0.14);
 	background:
 		linear-gradient(135deg, rgb(79 70 229 / 0.08), rgb(6 182 212 / 0.06)),
 		#fff;
-	color: var(--haptic-primary-dark);
-	font-weight: 700;
-	text-align: center;
+	box-shadow: var(--haptic-shadow-lg);
+}
+
+.demo-screenshot-caption {
+	margin: 0;
+	color: var(--haptic-text-muted);
+	line-height: 1.7;
 }
 
 @keyframes demo-ripple {

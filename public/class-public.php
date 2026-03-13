@@ -2,7 +2,7 @@
 /**
  * The public-facing functionality of the plugin.
  *
- * @package WP_Haptic_Vibrate
+ * @package Haptic_Vibrate
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Enqueues frontend CSS/JS only when there are active vibration rules
  * or debug mode is enabled, keeping the site lean.
  */
-class WP_Haptic_Vibrate_Public {
+class Haptic_Vibrate_Public {
 
 	/**
 	 * The ID of this plugin.
@@ -67,7 +67,7 @@ class WP_Haptic_Vibrate_Public {
 
 		wp_enqueue_style(
 			$this->plugin_name,
-			WP_HAPTIC_VIBRATE_PLUGIN_URL . 'public/css/public.css',
+			HAPTIC_VIBRATE_PLUGIN_URL . 'public/css/public.css',
 			array(),
 			$this->version,
 			'all'
@@ -88,7 +88,7 @@ class WP_Haptic_Vibrate_Public {
 
 		wp_enqueue_script(
 			$this->plugin_name . '-haptic-core',
-			WP_HAPTIC_VIBRATE_PLUGIN_URL . 'assets/js/haptic-core.js',
+			HAPTIC_VIBRATE_PLUGIN_URL . 'assets/js/haptic-core.js',
 			array(),
 			$this->version,
 			true
@@ -96,7 +96,7 @@ class WP_Haptic_Vibrate_Public {
 
 		wp_enqueue_script(
 			$this->plugin_name,
-			WP_HAPTIC_VIBRATE_PLUGIN_URL . 'public/js/public.js',
+			HAPTIC_VIBRATE_PLUGIN_URL . 'public/js/public.js',
 			array( $this->plugin_name . '-haptic-core' ),
 			$this->version,
 			true
@@ -134,7 +134,7 @@ class WP_Haptic_Vibrate_Public {
 
 		wp_localize_script(
 			$this->plugin_name,
-			'wpHapticPublic',
+			'hapticVibratePublic',
 			array(
 				'rules'     => $frontend_rules,
 				'debugMode' => ! empty( $settings['debug_mode'] ),
@@ -151,7 +151,7 @@ class WP_Haptic_Vibrate_Public {
 	private function get_settings() {
 		if ( null === $this->settings ) {
 			$this->settings = wp_parse_args(
-				(array) get_option( 'wp_haptic_vibrate_settings', array() ),
+				(array) get_option( 'haptic_vibrate_settings', get_option( 'wp_haptic_vibrate_settings', array() ) ),
 				array(
 					'rules'      => array(),
 					'debug_mode' => false,
@@ -176,7 +176,7 @@ class WP_Haptic_Vibrate_Public {
 			return 'haptic-vibrate-custom-' . ( absint( $index ) + 1 );
 		}
 
-		if ( ! isset( WP_Haptic_Vibrate_Admin::$presets[ $preset ] ) ) {
+		if ( ! isset( Haptic_Vibrate_Admin::$presets[ $preset ] ) ) {
 			$preset = 'single_short';
 		}
 

@@ -1,5 +1,5 @@
 /**
- * WP Haptic Vibrate – Admin JavaScript
+ * Haptic Vibrate – Admin JavaScript
  *
  * Handles:
  *  - Dynamic rule rows (add / remove / reorder via drag-and-drop)
@@ -10,7 +10,7 @@
  *  - Debug-mode toggle preview
  */
 
-/* global wpHapticAdmin, WPHapticCore, jQuery */
+/* global hapticVibrateAdmin, WPHapticCore, jQuery */
 (function ($) {
 	'use strict';
 
@@ -185,8 +185,8 @@
 			return parsePatternString( $row.find( '.haptic-rule__custom-pattern' ).val() );
 		}
 
-		if ( wpHapticAdmin.presets[ preset ] ) {
-			return wpHapticAdmin.presets[ preset ].pattern;
+		if ( hapticVibrateAdmin.presets[ preset ] ) {
+			return hapticVibrateAdmin.presets[ preset ].pattern;
 		}
 
 		return [ 200 ];
@@ -249,7 +249,7 @@
 		} );
 
 		$row.on( 'click', '.haptic-rule__remove-btn', function () {
-			if ( window.confirm( wpHapticAdmin.i18n.confirmRemove ) ) {
+			if ( window.confirm( hapticVibrateAdmin.i18n.confirmRemove ) ) {
 				$row.remove();
 				syncRuleRows();
 				toggleEmptyNotice();
@@ -361,8 +361,8 @@
 
 		if ( preset === 'custom' ) {
 			pattern = parsePatternString( customRaw );
-		} else if ( wpHapticAdmin.presets[ preset ] ) {
-			pattern = wpHapticAdmin.presets[ preset ].pattern;
+		} else if ( hapticVibrateAdmin.presets[ preset ] ) {
+			pattern = hapticVibrateAdmin.presets[ preset ].pattern;
 		} else {
 			pattern = [ 200 ];
 		}
@@ -376,7 +376,7 @@
 			playDebugAudio( effectivePattern );
 			$status.removeClass( 'is-error is-success' ).addClass( 'is-info' ).text( '🔊 Debug: played audio for ' + describedPattern );
 		} else {
-			$status.removeClass( 'is-success is-info' ).addClass( 'is-error' ).text( '⚠ ' + wpHapticAdmin.i18n.noVibration );
+			$status.removeClass( 'is-success is-info' ).addClass( 'is-error' ).text( '⚠ ' + hapticVibrateAdmin.i18n.noVibration );
 		}
 
 		$btn.addClass( 'haptic-btn--loading' );

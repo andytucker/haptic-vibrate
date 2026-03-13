@@ -2,7 +2,7 @@
 /**
  * Provides the admin settings page view for the plugin.
  *
- * @package WP_Haptic_Vibrate
+ * @package Haptic_Vibrate
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,19 +17,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<span class="haptic-header__icon" aria-hidden="true">📳</span>
 			<div>
 				<h1 class="haptic-header__title">
-					<?php esc_html_e( 'WP Haptic Vibrate', 'wp-haptic-vibrate' ); ?>
+					<?php esc_html_e( 'Haptic Vibrate', 'haptic-vibrate' ); ?>
 				</h1>
 				<p class="haptic-header__subtitle">
-					<?php esc_html_e( 'Add haptic vibration feedback to any element on your site.', 'wp-haptic-vibrate' ); ?>
+					<?php esc_html_e( 'Add haptic vibration feedback to any element on your site.', 'haptic-vibrate' ); ?>
 				</p>
 			</div>
 		</div>
 	</div>
 
-	<?php settings_errors( 'wp_haptic_vibrate_settings' ); ?>
+	<?php settings_errors( 'haptic_vibrate_settings' ); ?>
 
 	<form method="post" action="options.php" id="haptic-settings-form">
-		<?php settings_fields( 'wp_haptic_vibrate_group' ); ?>
+		<?php settings_fields( 'haptic_vibrate_group' ); ?>
 
 		<div class="haptic-grid">
 
@@ -41,13 +41,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div class="haptic-card__header">
 						<h2 class="haptic-card__title">
 							<span class="dashicons dashicons-admin-links" aria-hidden="true"></span>
-							<?php esc_html_e( 'Vibration Rules', 'wp-haptic-vibrate' ); ?>
+							<?php esc_html_e( 'Vibration Rules', 'haptic-vibrate' ); ?>
 						</h2>
 						<p class="haptic-card__desc">
 							<?php
 							esc_html_e(
 								'Map CSS selectors or generated pattern classes to vibration patterns. Each rule listens for common user interactions on matching elements.',
-								'wp-haptic-vibrate'
+								'haptic-vibrate'
 							);
 							?>
 						</p>
@@ -58,15 +58,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<!-- Rules list -->
 						<div id="haptic-rules-list" class="haptic-rules-list">
 							<?php if ( ! empty( $settings['rules'] ) ) : ?>
-								<?php foreach ( $settings['rules'] as $index => $rule ) : ?>
+								<?php foreach ( $settings['rules'] as $haptic_vibrate_index => $haptic_vibrate_rule ) : ?>
 									<?php
-									$this->render_rule_row( $index, $rule );
+									$this->render_rule_row( $haptic_vibrate_index, $haptic_vibrate_rule );
 									?>
 								<?php endforeach; ?>
 							<?php else : ?>
 								<div class="haptic-rules-empty" id="haptic-rules-empty">
 									<span class="haptic-rules-empty__icon" aria-hidden="true">🎯</span>
-									<p><?php esc_html_e( 'No rules yet. Click "Add Rule" to get started.', 'wp-haptic-vibrate' ); ?></p>
+									<p><?php esc_html_e( 'No rules yet. Click "Add Rule" to get started.', 'haptic-vibrate' ); ?></p>
 								</div>
 							<?php endif; ?>
 						</div>
@@ -75,7 +75,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<div class="haptic-rules-actions">
 							<button type="button" id="haptic-add-rule" class="haptic-btn haptic-btn--primary">
 								<span class="dashicons dashicons-plus-alt2" aria-hidden="true"></span>
-								<?php esc_html_e( 'Add Rule', 'wp-haptic-vibrate' ); ?>
+								<?php esc_html_e( 'Add Rule', 'haptic-vibrate' ); ?>
 							</button>
 						</div>
 
@@ -85,14 +85,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</div><!-- /.haptic-col--main -->
 
 			<!-- ── Right column ─────────────────────────────────────── -->
-			<aside class="haptic-col haptic-col--sidebar" aria-label="<?php esc_attr_e( 'Plugin tools and actions', 'wp-haptic-vibrate' ); ?>">
+			<aside class="haptic-col haptic-col--sidebar" aria-label="<?php esc_attr_e( 'Plugin tools and actions', 'haptic-vibrate' ); ?>">
 
 				<!-- Debug Mode Card -->
 				<div class="haptic-card haptic-card--compact" id="haptic-debug-card">
 					<div class="haptic-card__header">
 						<h2 class="haptic-card__title">
 							<span class="dashicons dashicons-desktop" aria-hidden="true"></span>
-							<?php esc_html_e( 'Desktop Debug Mode', 'wp-haptic-vibrate' ); ?>
+							<?php esc_html_e( 'Desktop Debug Mode', 'haptic-vibrate' ); ?>
 						</h2>
 					</div>
 					<div class="haptic-card__body">
@@ -100,7 +100,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<?php
 							esc_html_e(
 								'When enabled, desktop browsers that don\'t support the Vibration API receive a visual ripple effect and a short audio beep instead. Useful for testing without a mobile device.',
-								'wp-haptic-vibrate'
+								'haptic-vibrate'
 							);
 							?>
 						</p>
@@ -109,20 +109,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<input
 								type="checkbox"
 								id="haptic-debug-mode"
-								name="<?php echo esc_attr( WP_Haptic_Vibrate_Admin::OPTION_KEY ); ?>[debug_mode]"
+								name="<?php echo esc_attr( Haptic_Vibrate_Admin::OPTION_KEY ); ?>[debug_mode]"
 								value="1"
 								<?php checked( ! empty( $settings['debug_mode'] ) ); ?>
 							/>
 							<span class="haptic-toggle__track" aria-hidden="true"></span>
 							<span class="haptic-toggle__label">
-								<?php esc_html_e( 'Enable debug mode', 'wp-haptic-vibrate' ); ?>
+								<?php esc_html_e( 'Enable debug mode', 'haptic-vibrate' ); ?>
 							</span>
 						</label>
 
 						<div class="haptic-debug-preview" id="haptic-debug-preview" aria-hidden="true">
 							<div class="haptic-ripple-demo">
 								<div class="haptic-ripple-demo__circle"></div>
-								<span><?php esc_html_e( 'Visual ripple preview', 'wp-haptic-vibrate' ); ?></span>
+								<span><?php esc_html_e( 'Visual ripple preview', 'haptic-vibrate' ); ?></span>
 							</div>
 						</div>
 					</div>
@@ -133,23 +133,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 					<div class="haptic-card__header">
 						<h2 class="haptic-card__title">
 							<span class="dashicons dashicons-controls-play" aria-hidden="true"></span>
-							<?php esc_html_e( 'Pattern Tester & Save', 'wp-haptic-vibrate' ); ?>
+							<?php esc_html_e( 'Pattern Tester & Save', 'haptic-vibrate' ); ?>
 						</h2>
 					</div>
 					<div class="haptic-card__body">
 						<section class="haptic-panel-section haptic-panel-section--tester">
 							<p class="haptic-field__help">
-								<?php esc_html_e( 'Quickly preview any pattern on this device.', 'wp-haptic-vibrate' ); ?>
+								<?php esc_html_e( 'Quickly preview any pattern on this device.', 'haptic-vibrate' ); ?>
 							</p>
 
 							<div class="haptic-field">
 								<label for="haptic-tester-preset" class="haptic-field__label">
-									<?php esc_html_e( 'Preset', 'wp-haptic-vibrate' ); ?>
+									<?php esc_html_e( 'Preset', 'haptic-vibrate' ); ?>
 								</label>
 								<select id="haptic-tester-preset" class="haptic-select">
-									<?php foreach ( WP_Haptic_Vibrate_Admin::$presets as $key => $preset ) : ?>
-										<option value="<?php echo esc_attr( $key ); ?>">
-											<?php echo esc_html( $preset['label'] ); ?>
+									<?php foreach ( Haptic_Vibrate_Admin::$presets as $haptic_vibrate_key => $haptic_vibrate_preset ) : ?>
+										<option value="<?php echo esc_attr( $haptic_vibrate_key ); ?>">
+											<?php echo esc_html( $haptic_vibrate_preset['label'] ); ?>
 										</option>
 									<?php endforeach; ?>
 								</select>
@@ -157,7 +157,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 							<div class="haptic-field" id="haptic-tester-custom-wrap" style="display:none;">
 								<label for="haptic-tester-custom" class="haptic-field__label">
-									<?php esc_html_e( 'Custom pattern (ms, comma-separated)', 'wp-haptic-vibrate' ); ?>
+									<?php esc_html_e( 'Custom pattern (ms, comma-separated)', 'haptic-vibrate' ); ?>
 								</label>
 								<input
 									type="text"
@@ -170,7 +170,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<div class="haptic-sidebar-actions">
 								<button type="button" id="haptic-tester-btn" class="haptic-btn haptic-btn--primary haptic-btn--full">
 									<span class="dashicons dashicons-controls-play" aria-hidden="true"></span>
-									<?php esc_html_e( 'Test Pattern', 'wp-haptic-vibrate' ); ?>
+									<?php esc_html_e( 'Test Pattern', 'haptic-vibrate' ); ?>
 								</button>
 							</div>
 
@@ -180,7 +180,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<section class="haptic-panel-section haptic-panel-section--save">
 							<div class="haptic-sidebar-actions haptic-sidebar-actions--save">
 								<button type="submit" name="submit" class="haptic-btn haptic-btn--primary haptic-btn--full haptic-save-btn">
-									<?php esc_html_e( 'Save Settings', 'wp-haptic-vibrate' ); ?>
+									<?php esc_html_e( 'Save Settings', 'haptic-vibrate' ); ?>
 								</button>
 							</div>
 						</section>

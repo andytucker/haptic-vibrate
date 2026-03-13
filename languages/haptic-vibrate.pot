@@ -1,8 +1,8 @@
 # Copyright (C) 2024 Victor Pilyasinsky
-# This file is distributed under the same license as the WP Haptic Vibrate plugin.
+# This file is distributed under the same license as the Haptic Vibrate plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Haptic Vibrate 1.0.0\n"
+"Project-Id-Version: Haptic Vibrate 1.0.0\n"
 "Report-Msgid-Bugs-To: https://github.com/andytucker/wp-haptic-vibrate/issues\n"
 "POT-Creation-Date: 2024-01-01T00:00:00+00:00\n"
 "MIME-Version: 1.0\n"
@@ -12,10 +12,10 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "X-Generator: WP-CLI 2.8.0\n"
-"X-Domain: wp-haptic-vibrate\n"
+"X-Domain: haptic-vibrate\n"
 
 #. Plugin Name of the plugin
-msgid "WP Haptic Vibrate"
+msgid "Haptic Vibrate"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -28,10 +28,6 @@ msgstr ""
 
 #. Author of the plugin
 msgid "Victor Pilyasinsky"
-msgstr ""
-
-#: admin/class-admin.php
-msgid "WP Haptic Vibrate"
 msgstr ""
 
 #: admin/class-admin.php
@@ -123,7 +119,7 @@ msgid "Visual ripple preview"
 msgstr ""
 
 #: admin/partials/admin-display.php
-msgid "Pattern Tester"
+msgid "Pattern Tester & Save"
 msgstr ""
 
 #: admin/partials/admin-display.php
@@ -136,10 +132,6 @@ msgstr ""
 
 #: admin/partials/admin-display.php
 msgid "Custom pattern (ms, comma-separated)"
-msgstr ""
-
-#: admin/partials/admin-display.php
-msgid "Test Pattern"
 msgstr ""
 
 #: admin/partials/admin-display.php

@@ -1,20 +1,20 @@
 /**
- * WP Haptic Vibrate – Public JavaScript
+ * Haptic Vibrate – Public JavaScript
  *
- * Reads the wpHapticPublic configuration injected by PHP and attaches
+ * Reads the hapticVibratePublic configuration injected by PHP and attaches
  * interaction listeners that trigger vibration (or debug feedback) on matching
  * elements according to the admin-defined rules.
  *
  * No dependencies – pure vanilla ES5 for maximum compatibility.
  */
-/* global wpHapticPublic, WPHapticCore */
+/* global hapticVibratePublic, WPHapticCore */
 (function () {
 	'use strict';
 
-	if ( typeof wpHapticPublic === 'undefined' ) { return; }
+	if ( typeof hapticVibratePublic === 'undefined' ) { return; }
 
-	var rules     = wpHapticPublic.rules     || [];
-	var debugMode = wpHapticPublic.debugMode || false;
+	var rules     = hapticVibratePublic.rules     || [];
+	var debugMode = hapticVibratePublic.debugMode || false;
 	var PRESS_DEBOUNCE_MS = 450;
 	var Haptic = window.WPHapticCore || null;
 	var lastInteractionAt = 0;

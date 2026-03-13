@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `WP Haptic Vibrate` will be documented in this file.
+All notable changes to `Haptic Vibrate` will be documented in this file.
 
 ## [Unreleased]
 

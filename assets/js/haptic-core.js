@@ -1,5 +1,5 @@
 /**
- * WP Haptic Vibrate – shared haptic core.
+ * Haptic Vibrate – shared haptic core.
  *
  * Mirrors the browser-haptic method model while keeping WordPress-friendly,
  * no-build browser compatibility.

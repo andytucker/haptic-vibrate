@@ -1,8 +1,8 @@
-=== WP Haptic Vibrate ===
+=== Haptic Vibrate ===
 Contributors: andytucker
 Tags: vibration, haptic, mobile, ux, frontend
 Requires at least: 5.9
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 7.4
 Stable tag: 1.0.0
 License: GPLv2 or later
@@ -12,7 +12,7 @@ Add haptic feedback to site elements using CSS selectors or auto-generated patte
 
 == Description ==
 
-WP Haptic Vibrate lets you map CSS selectors or generated pattern classes to vibration patterns supported by mobile browsers.
+Haptic Vibrate lets you map CSS selectors or generated pattern classes to vibration patterns supported by mobile browsers.
 
 Features include:
 
@@ -27,7 +27,7 @@ Features include:
 
 == Installation ==
 
-1. Upload the `wp-haptic-vibrate` folder to the `/wp-content/plugins/` directory, or upload the plugin ZIP through WordPress.
+1. Upload the `haptic-vibrate` folder to the `/wp-content/plugins/` directory, or upload the plugin ZIP through WordPress.
 2. Activate the plugin through the **Plugins** menu in WordPress.
 3. Go to **Settings > Haptic Vibrate**.
 4. Add one or more vibration rules and save your settings.
@@ -44,7 +44,7 @@ Desktop browsers generally do not support mobile haptics, but you can enable Des
 
 = What happens on uninstall? =
 
-Uninstalling the plugin removes the saved `wp_haptic_vibrate_settings` option from the database.
+Uninstalling the plugin removes the saved `haptic_vibrate_settings` option from the database.
 
 == Changelog ==
 

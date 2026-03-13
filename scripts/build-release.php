@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-$plugin_slug = 'wp-haptic-vibrate';
+$plugin_slug = 'haptic-vibrate';
 $root_dir    = dirname(__DIR__);
 $package_dir = $root_dir . DIRECTORY_SEPARATOR . 'dist' . DIRECTORY_SEPARATOR . 'package';
 $source_dir  = $package_dir . DIRECTORY_SEPARATOR . $plugin_slug;
@@ -16,7 +16,7 @@ $release_paths = array(
 	'LICENSE',
 	'readme.txt',
 	'uninstall.php',
-	'wp-haptic-vibrate.php',
+	'haptic-vibrate.php',
 );
 
 /**

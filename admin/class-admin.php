@@ -2,7 +2,7 @@
 /**
  * The admin-specific functionality of the plugin.
  *
- * @package WP_Haptic_Vibrate
+ * @package Haptic_Vibrate
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Defines the plugin name, version, registers settings,
  * and enqueues the admin-specific stylesheet and JavaScript.
  */
-class WP_Haptic_Vibrate_Admin {
+class Haptic_Vibrate_Admin {
 
 	/**
 	 * The ID of this plugin.
@@ -39,7 +39,8 @@ class WP_Haptic_Vibrate_Admin {
 	 * @since  1.0.0
 	 * @var    string
 	 */
-	const OPTION_KEY = 'wp_haptic_vibrate_settings';
+	const OPTION_KEY = 'haptic_vibrate_settings';
+	const LEGACY_OPTION_KEY = 'wp_haptic_vibrate_settings';
 
 	/**
 	 * Built-in vibration pattern presets.
@@ -91,12 +92,12 @@ class WP_Haptic_Vibrate_Admin {
 			return;
 		}
 
-		$style_path = WP_HAPTIC_VIBRATE_PLUGIN_DIR . 'admin/css/admin.css';
+		$style_path = HAPTIC_VIBRATE_PLUGIN_DIR . 'admin/css/admin.css';
 		$style_ver  = file_exists( $style_path ) ? (string) filemtime( $style_path ) : $this->version;
 
 		wp_enqueue_style(
 			$this->plugin_name . '-admin',
-			WP_HAPTIC_VIBRATE_PLUGIN_URL . 'admin/css/admin.css',
+			HAPTIC_VIBRATE_PLUGIN_URL . 'admin/css/admin.css',
 			array(),
 			$style_ver,
 			'all'
@@ -114,14 +115,14 @@ class WP_Haptic_Vibrate_Admin {
 			return;
 		}
 
-		$core_path  = WP_HAPTIC_VIBRATE_PLUGIN_DIR . 'assets/js/haptic-core.js';
-		$admin_path = WP_HAPTIC_VIBRATE_PLUGIN_DIR . 'admin/js/admin.js';
+		$core_path  = HAPTIC_VIBRATE_PLUGIN_DIR . 'assets/js/haptic-core.js';
+		$admin_path = HAPTIC_VIBRATE_PLUGIN_DIR . 'admin/js/admin.js';
 		$core_ver   = file_exists( $core_path ) ? (string) filemtime( $core_path ) : $this->version;
 		$admin_ver  = file_exists( $admin_path ) ? (string) filemtime( $admin_path ) : $this->version;
 
 		wp_enqueue_script(
 			$this->plugin_name . '-haptic-core',
-			WP_HAPTIC_VIBRATE_PLUGIN_URL . 'assets/js/haptic-core.js',
+			HAPTIC_VIBRATE_PLUGIN_URL . 'assets/js/haptic-core.js',
 			array(),
 			$core_ver,
 			true
@@ -129,7 +130,7 @@ class WP_Haptic_Vibrate_Admin {
 
 		wp_enqueue_script(
 			$this->plugin_name . '-admin',
-			WP_HAPTIC_VIBRATE_PLUGIN_URL . 'admin/js/admin.js',
+			HAPTIC_VIBRATE_PLUGIN_URL . 'admin/js/admin.js',
 			array( 'jquery', $this->plugin_name . '-haptic-core' ),
 			$admin_ver,
 			true
@@ -137,18 +138,18 @@ class WP_Haptic_Vibrate_Admin {
 
 		wp_localize_script(
 			$this->plugin_name . '-admin',
-			'wpHapticAdmin',
+			'hapticVibrateAdmin',
 			array(
 				'ajaxUrl'  => admin_url( 'admin-ajax.php' ),
-				'nonce'    => wp_create_nonce( 'wp_haptic_test_pattern' ),
+				'nonce'    => wp_create_nonce( 'haptic_vibrate_test_pattern' ),
 				'presets'  => self::$presets,
 				'i18n'     => array(
-					'patternPlaceholder' => __( 'e.g. 200,100,200', 'wp-haptic-vibrate' ),
-					'addRule'            => __( 'Add Rule', 'wp-haptic-vibrate' ),
-					'removeRule'         => __( 'Remove', 'wp-haptic-vibrate' ),
-					'testPattern'        => __( 'Test Pattern', 'wp-haptic-vibrate' ),
-					'noVibration'        => __( 'Vibration API not supported in this browser.', 'wp-haptic-vibrate' ),
-					'confirmRemove'      => __( 'Remove this rule?', 'wp-haptic-vibrate' ),
+					'patternPlaceholder' => __( 'e.g. 200,100,200', 'haptic-vibrate' ),
+					'addRule'            => __( 'Add Rule', 'haptic-vibrate' ),
+					'removeRule'         => __( 'Remove', 'haptic-vibrate' ),
+					'testPattern'        => __( 'Test Pattern', 'haptic-vibrate' ),
+					'noVibration'        => __( 'Vibration API not supported in this browser.', 'haptic-vibrate' ),
+					'confirmRemove'      => __( 'Remove this rule?', 'haptic-vibrate' ),
 				),
 			)
 		);
@@ -161,8 +162,8 @@ class WP_Haptic_Vibrate_Admin {
 	 */
 	public function add_plugin_admin_menu() {
 		add_options_page(
-			__( 'WP Haptic Vibrate', 'wp-haptic-vibrate' ),
-			__( 'Haptic Vibrate', 'wp-haptic-vibrate' ),
+			__( 'Haptic Vibrate', 'haptic-vibrate' ),
+			__( 'Haptic Vibrate', 'haptic-vibrate' ),
 			'manage_options',
 			$this->plugin_name,
 			array( $this, 'display_plugin_admin_page' )
@@ -176,7 +177,7 @@ class WP_Haptic_Vibrate_Admin {
 	 */
 	public function register_settings() {
 		register_setting(
-			'wp_haptic_vibrate_group',
+			'haptic_vibrate_group',
 			self::OPTION_KEY,
 			array(
 				'sanitize_callback' => array( $this, 'sanitize_settings' ),
@@ -260,10 +261,10 @@ class WP_Haptic_Vibrate_Admin {
 	 * @since 1.0.0
 	 */
 	public function ajax_test_pattern() {
-		check_ajax_referer( 'wp_haptic_test_pattern', 'nonce' );
+		check_ajax_referer( 'haptic_vibrate_test_pattern', 'nonce' );
 
 		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorised.', 'wp-haptic-vibrate' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Unauthorised.', 'haptic-vibrate' ) ), 403 );
 		}
 
 		$preset     = isset( $_POST['preset'] ) ? sanitize_key( wp_unslash( $_POST['preset'] ) ) : 'single_short';
@@ -289,7 +290,7 @@ class WP_Haptic_Vibrate_Admin {
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;
 		}
-		$settings = get_option( self::OPTION_KEY, array() );
+		$settings = get_option( self::OPTION_KEY, get_option( self::LEGACY_OPTION_KEY, array() ) );
 		$settings = wp_parse_args(
 			$settings,
 			array(
@@ -297,7 +298,7 @@ class WP_Haptic_Vibrate_Admin {
 				'rules'      => array(),
 			)
 		);
-		include WP_HAPTIC_VIBRATE_PLUGIN_DIR . 'admin/partials/admin-display.php';
+		include HAPTIC_VIBRATE_PLUGIN_DIR . 'admin/partials/admin-display.php';
 	}
 
 	/**
@@ -326,20 +327,20 @@ class WP_Haptic_Vibrate_Admin {
 	 * Render a single rule row (used both in the page and the JS template).
 	 *
 	 * @since 1.0.0
-	 * @param int|string $index Row index (may be the literal string '{{INDEX}}' for the JS template).
-	 * @param array      $rule  Existing rule data, or empty array for a blank row.
+	 * @param int|string $haptic_vibrate_index Row index (may be the literal string '{{INDEX}}' for the JS template).
+	 * @param array      $haptic_vibrate_rule  Existing rule data, or empty array for a blank row.
 	 */
-	public function render_rule_row( $index, $rule ) {
-		$selector       = isset( $rule['selector'] ) ? $rule['selector'] : '';
-		$preset         = isset( $rule['preset'] ) ? $rule['preset'] : 'single_short';
-		$custom_pattern = isset( $rule['custom_pattern'] ) ? $rule['custom_pattern'] : '';
+	public function render_rule_row( $haptic_vibrate_index, $haptic_vibrate_rule ) {
+		$selector       = isset( $haptic_vibrate_rule['selector'] ) ? $haptic_vibrate_rule['selector'] : '';
+		$preset         = isset( $haptic_vibrate_rule['preset'] ) ? $haptic_vibrate_rule['preset'] : 'single_short';
+		$custom_pattern = isset( $haptic_vibrate_rule['custom_pattern'] ) ? $haptic_vibrate_rule['custom_pattern'] : '';
 		$opt            = self::OPTION_KEY;
-		$idx            = (string) $index;
+		$idx            = (string) $haptic_vibrate_index;
 		$custom_class   = 'custom' !== $preset ? ' haptic-hidden' : '';
-		$class_name     = $this->get_rule_class_name( $rule, absint( $index ) );
+		$class_name     = $this->get_rule_class_name( $haptic_vibrate_rule, absint( $haptic_vibrate_index ) );
 		?>
 		<div class="haptic-rule" data-index="<?php echo esc_attr( $idx ); ?>">
-			<div class="haptic-rule__handle" aria-hidden="true" title="<?php esc_attr_e( 'Drag to reorder', 'wp-haptic-vibrate' ); ?>">
+			<div class="haptic-rule__handle" aria-hidden="true" title="<?php esc_attr_e( 'Drag to reorder', 'haptic-vibrate' ); ?>">
 				<span class="dashicons dashicons-menu"></span>
 			</div>
 			<div class="haptic-rule__fields">
@@ -348,7 +349,7 @@ class WP_Haptic_Vibrate_Admin {
 				<div class="haptic-rule__row haptic-rule__row--selector">
 					<div class="haptic-field haptic-field--grow">
 						<label class="haptic-field__label">
-							<?php esc_html_e( 'CSS Selector', 'wp-haptic-vibrate' ); ?>
+							<?php esc_html_e( 'CSS Selector', 'haptic-vibrate' ); ?>
 						</label>
 						<input
 							type="text"
@@ -361,7 +362,7 @@ class WP_Haptic_Vibrate_Admin {
 					</div>
 					<div class="haptic-field haptic-field--class-preview">
 						<label class="haptic-field__label">
-							<?php esc_html_e( 'Pattern Class', 'wp-haptic-vibrate' ); ?>
+							<?php esc_html_e( 'Pattern Class', 'haptic-vibrate' ); ?>
 						</label>
 						<div class="haptic-field__input-wrap haptic-field__input-wrap--prefix">
 							<span class="haptic-field__prefix">.</span>
@@ -382,19 +383,19 @@ class WP_Haptic_Vibrate_Admin {
 				<div class="haptic-rule__row">
 					<div class="haptic-field haptic-field--preset">
 						<label class="haptic-field__label">
-							<?php esc_html_e( 'Pattern Preset', 'wp-haptic-vibrate' ); ?>
+							<?php esc_html_e( 'Pattern Preset', 'haptic-vibrate' ); ?>
 						</label>
 						<select
 							name="<?php echo esc_attr( $opt ); ?>[rules][<?php echo esc_attr( $idx ); ?>][preset]"
 							class="haptic-select haptic-rule__preset"
 						>
-							<?php foreach ( self::$presets as $key => $p ) : ?>
+							<?php foreach ( self::$presets as $haptic_vibrate_key => $haptic_vibrate_preset ) : ?>
 								<option
-									value="<?php echo esc_attr( $key ); ?>"
-									data-pattern="<?php echo esc_attr( implode( ',', $p['pattern'] ) ); ?>"
-									<?php selected( $preset, $key ); ?>
+									value="<?php echo esc_attr( $haptic_vibrate_key ); ?>"
+									data-pattern="<?php echo esc_attr( implode( ',', $haptic_vibrate_preset['pattern'] ) ); ?>"
+									<?php selected( $preset, $haptic_vibrate_key ); ?>
 								>
-									<?php echo esc_html( $p['label'] ); ?>
+									<?php echo esc_html( $haptic_vibrate_preset['label'] ); ?>
 								</option>
 							<?php endforeach; ?>
 						</select>
@@ -402,7 +403,7 @@ class WP_Haptic_Vibrate_Admin {
 
 					<div class="haptic-field haptic-field--custom<?php echo esc_attr( $custom_class ); ?>">
 						<label class="haptic-field__label">
-							<?php esc_html_e( 'Custom Pattern (ms)', 'wp-haptic-vibrate' ); ?>
+							<?php esc_html_e( 'Custom Pattern (ms)', 'haptic-vibrate' ); ?>
 						</label>
 						<input
 							type="text"
@@ -420,7 +421,7 @@ class WP_Haptic_Vibrate_Admin {
 						<button
 							type="button"
 							class="haptic-btn haptic-btn--ghost haptic-rule__test-btn"
-							title="<?php esc_attr_e( 'Test this pattern', 'wp-haptic-vibrate' ); ?>"
+							title="<?php esc_attr_e( 'Test this pattern', 'haptic-vibrate' ); ?>"
 						>
 							<span class="dashicons dashicons-controls-play"></span>
 						</button>
@@ -432,7 +433,7 @@ class WP_Haptic_Vibrate_Admin {
 				<button
 					type="button"
 					class="haptic-btn haptic-btn--danger haptic-btn--icon haptic-rule__remove-btn"
-					title="<?php esc_attr_e( 'Remove rule', 'wp-haptic-vibrate' ); ?>"
+					title="<?php esc_attr_e( 'Remove rule', 'haptic-vibrate' ); ?>"
 				>
 					<span class="dashicons dashicons-trash"></span>
 				</button>

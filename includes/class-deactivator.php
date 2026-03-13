@@ -2,7 +2,7 @@
 /**
  * Fired during plugin deactivation.
  *
- * @package WP_Haptic_Vibrate
+ * @package Haptic_Vibrate
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * All of the functions required to run when the plugin is deactivated.
  * Settings are preserved so they are available if the plugin is re-activated.
  */
-class WP_Haptic_Vibrate_Deactivator {
+class Haptic_Vibrate_Deactivator {
 
 	/**
 	 * Deactivate the plugin.

@@ -2,7 +2,7 @@
 /**
  * Fired during plugin activation.
  *
- * @package WP_Haptic_Vibrate
+ * @package Haptic_Vibrate
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Sets up the default plugin options so the settings page works
  * out of the box immediately after activation.
  */
-class WP_Haptic_Vibrate_Activator {
+class Haptic_Vibrate_Activator {
 
 	/**
 	 * Set up default plugin options on activation.
@@ -31,8 +31,14 @@ class WP_Haptic_Vibrate_Activator {
 			'debug_mode' => false,
 		);
 
-		if ( ! get_option( 'wp_haptic_vibrate_settings' ) ) {
-			add_option( 'wp_haptic_vibrate_settings', $default_options );
+		$legacy_options = get_option( 'wp_haptic_vibrate_settings' );
+
+		if ( false === get_option( 'haptic_vibrate_settings', false ) ) {
+			if ( false !== $legacy_options ) {
+				add_option( 'haptic_vibrate_settings', $legacy_options );
+			} else {
+				add_option( 'haptic_vibrate_settings', $default_options );
+			}
 		}
 	}
 }

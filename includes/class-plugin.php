@@ -2,7 +2,7 @@
 /**
  * The core plugin class.
  *
- * @package WP_Haptic_Vibrate
+ * @package Haptic_Vibrate
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,13 +18,13 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Also maintains the unique identifier of this plugin as well as the current
  * version of the plugin.
  */
-class WP_Haptic_Vibrate {
+class Haptic_Vibrate {
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks.
 	 *
 	 * @since  1.0.0
-	 * @var    WP_Haptic_Vibrate_Loader $loader Maintains and registers all hooks for the plugin.
+	 * @var    Haptic_Vibrate_Loader $loader Maintains and registers all hooks for the plugin.
 	 */
 	protected $loader;
 
@@ -50,11 +50,10 @@ class WP_Haptic_Vibrate {
 	 * @since 1.0.0
 	 */
 	public function __construct() {
-		$this->version     = WP_HAPTIC_VIBRATE_VERSION;
-		$this->plugin_name = 'wp-haptic-vibrate';
+		$this->version     = HAPTIC_VIBRATE_VERSION;
+		$this->plugin_name = 'haptic-vibrate';
 
 		$this->load_dependencies();
-		$this->set_locale();
 		$this->define_admin_hooks();
 		$this->define_public_hooks();
 	}
@@ -65,24 +64,13 @@ class WP_Haptic_Vibrate {
 	 * @since 1.0.0
 	 */
 	private function load_dependencies() {
-		require_once WP_HAPTIC_VIBRATE_PLUGIN_DIR . 'includes/class-loader.php';
-		require_once WP_HAPTIC_VIBRATE_PLUGIN_DIR . 'includes/class-i18n.php';
-		require_once WP_HAPTIC_VIBRATE_PLUGIN_DIR . 'includes/class-activator.php';
-		require_once WP_HAPTIC_VIBRATE_PLUGIN_DIR . 'includes/class-deactivator.php';
-		require_once WP_HAPTIC_VIBRATE_PLUGIN_DIR . 'admin/class-admin.php';
-		require_once WP_HAPTIC_VIBRATE_PLUGIN_DIR . 'public/class-public.php';
+		require_once HAPTIC_VIBRATE_PLUGIN_DIR . 'includes/class-loader.php';
+		require_once HAPTIC_VIBRATE_PLUGIN_DIR . 'includes/class-activator.php';
+		require_once HAPTIC_VIBRATE_PLUGIN_DIR . 'includes/class-deactivator.php';
+		require_once HAPTIC_VIBRATE_PLUGIN_DIR . 'admin/class-admin.php';
+		require_once HAPTIC_VIBRATE_PLUGIN_DIR . 'public/class-public.php';
 
-		$this->loader = new WP_Haptic_Vibrate_Loader();
-	}
-
-	/**
-	 * Define the locale for this plugin for internationalisation.
-	 *
-	 * @since 1.0.0
-	 */
-	private function set_locale() {
-		$plugin_i18n = new WP_Haptic_Vibrate_I18n();
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
+		$this->loader = new Haptic_Vibrate_Loader();
 	}
 
 	/**
@@ -91,7 +79,7 @@ class WP_Haptic_Vibrate {
 	 * @since 1.0.0
 	 */
 	private function define_admin_hooks() {
-		$plugin_admin = new WP_Haptic_Vibrate_Admin( $this->plugin_name, $this->version );
+		$plugin_admin = new Haptic_Vibrate_Admin( $this->plugin_name, $this->version );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -106,7 +94,7 @@ class WP_Haptic_Vibrate {
 	 * @since 1.0.0
 	 */
 	private function define_public_hooks() {
-		$plugin_public = new WP_Haptic_Vibrate_Public( $this->plugin_name, $this->version );
+		$plugin_public = new Haptic_Vibrate_Public( $this->plugin_name, $this->version );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
@@ -135,7 +123,7 @@ class WP_Haptic_Vibrate {
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
 	 * @since  1.0.0
-	 * @return WP_Haptic_Vibrate_Loader Orchestrates the hooks of the plugin.
+	 * @return Haptic_Vibrate_Loader Orchestrates the hooks of the plugin.
 	 */
 	public function get_loader() {
 		return $this->loader;

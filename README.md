@@ -1,4 +1,4 @@
-# WP Haptic Vibrate
+# Haptic Vibrate
 
 **WordPress Plugin** — Add haptic (vibration) feedback to any element on your site using the browser's native [Vibration API](https://developer.mozilla.org/en-US/docs/Web/API/Vibration_API).
 
@@ -20,7 +20,7 @@
 
 ## Installation
 
-1. Upload the `wp-haptic-vibrate` folder to `/wp-content/plugins/`
+1. Upload the `haptic-vibrate` folder to `/wp-content/plugins/`
 2. Activate the plugin via the **Plugins** screen in WordPress
 3. Go to **Settings → Haptic Vibrate** to configure rules
 

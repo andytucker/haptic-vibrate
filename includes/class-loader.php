@@ -2,7 +2,7 @@
 /**
  * Registers all actions and filters for the plugin.
  *
- * @package WP_Haptic_Vibrate
+ * @package Haptic_Vibrate
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * registers them with the WordPress API. Call the run function to execute the
  * list of actions and filters.
  */
-class WP_Haptic_Vibrate_Loader {
+class Haptic_Vibrate_Loader {
 
 	/**
 	 * The array of actions registered with WordPress.

@@ -14,7 +14,7 @@
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
 		rel="stylesheet"
 	/>
-	<link rel="stylesheet" href="./styles.css?v=20260311-3" />
+	<link rel="stylesheet" href="./styles.css?v=20260327" />
 </head>
 <body>
 	<div class="demo-shell">
@@ -120,7 +120,8 @@
 					</div>
 					<div class="demo-platform-list">
 						<div class="demo-platform-item"><strong>Android</strong><span>Uses the browser Vibration API.</span></div>
-						<div class="demo-platform-item"><strong>iPhone</strong><span>Uses a pulse-style fallback in supported Safari versions.</span></div>
+							<div class="demo-platform-item"><strong>iPhone</strong><span>PWM intensity modulation via Safari 17.4+ switch fallback.</span></div>
+							<div class="demo-platform-item"><strong>Firefox Android</strong><span>Automatic switch fallback for v129+ which dropped the Vibration API.</span></div>
 						<div class="demo-platform-item"><strong>Desktop</strong><span>Uses debug feedback so you can test without guessing.</span></div>
 					</div>
 				</div>
@@ -169,8 +170,11 @@
 											<div class="haptic-field haptic-field--preset">
 												<label class="haptic-field__label" for="demo-preset">Pattern Preset</label>
 												<select id="demo-preset" class="haptic-select">
-													<option value="light">Light</option>
-													<option value="notification">Notification</option>
+													<option value="light">Light</option>											<option value="medium">Medium</option>
+											<option value="heavy">Heavy</option>
+											<option value="soft">Soft</option>
+											<option value="rigid">Rigid</option>
+											<option value="selection">Selection</option>													<option value="notification">Notification</option>
 													<option value="success" selected>Success</option>
 													<option value="warning">Warning</option>
 													<option value="error">Error</option>
@@ -289,6 +293,10 @@
 										<select id="demo-tester-preset" class="haptic-select">
 											<option value="light">Light</option>
 											<option value="medium">Medium</option>
+											<option value="heavy">Heavy</option>
+											<option value="soft">Soft</option>
+											<option value="rigid">Rigid</option>
+											<option value="selection">Selection</option>
 											<option value="single_short">Single Short</option>
 											<option value="double_tap">Double Tap</option>
 											<option value="heartbeat">Heartbeat</option>
@@ -302,6 +310,13 @@
 									<div class="haptic-field haptic-hidden" id="demo-tester-custom-wrap">
 										<label class="haptic-field__label" for="demo-tester-custom">Custom pattern (ms, comma-separated)</label>
 										<input id="demo-tester-custom" class="haptic-input" type="text" value="200,100,200" spellcheck="false" />
+									</div>
+									<div class="haptic-field haptic-field--intensity">
+										<label class="haptic-field__label" for="demo-tester-intensity">Intensity</label>
+										<div class="haptic-field__range-wrap">
+											<input id="demo-tester-intensity" class="haptic-range" type="range" min="0" max="1" step="0.05" value="0.7" />
+											<span class="haptic-range__value" id="demo-tester-intensity-value">70%</span>
+										</div>
 									</div>
 									<div class="haptic-sidebar-actions">
 										<button type="button" id="demo-tester-btn" class="haptic-btn haptic-btn--primary haptic-btn--full">Test Pattern</button>
@@ -328,7 +343,7 @@
 		</main>
 	</div>
 
-	<script src="./haptic-core.js?v=20260311-3"></script>
-	<script src="./script.js?v=20260311-3"></script>
+	<script src="./haptic-core.js?v=20260327"></script>
+	<script src="./script.js?v=20260327"></script>
 </body>
 </html>

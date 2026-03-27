@@ -59,7 +59,13 @@
 	}
 
 	function getPatternByName(name) {
-		return PRESETS[name] ? PRESETS[name].slice() : [200];
+		var entry = PRESETS[name];
+		return entry ? entry.pattern.slice() : [200];
+	}
+
+	function getIntensityByName(name) {
+		var entry = PRESETS[name];
+		return entry ? entry.intensity : 0.7;
 	}
 
 	function getEffectivePattern(pattern) {
@@ -188,14 +194,21 @@
 		if (typeof Haptic.hasVibration === 'function' && Haptic.hasVibration()) {
 			return {
 				kind: 'is-success',
-				message: 'Native vibration support detected. Demo tests should fire real haptics on this device.'
+				message: 'Native vibration support detected. Demo tests should fire real haptics with intensity on this device.'
 			};
 		}
 
 		if (typeof Haptic.hasIOSHapticFallback === 'function' && Haptic.hasIOSHapticFallback()) {
 			return {
+				kind: 'is-success',
+				message: 'iOS Safari PWM fallback detected. Intensity slider controls haptic weight via toggle frequency modulation.'
+			};
+		}
+
+		if (typeof Haptic.isSupported === 'function' && Haptic.isSupported()) {
+			return {
 				kind: 'is-info',
-				message: 'iOS Safari fallback detected. Effects may still be subtler than Android vibration.'
+				message: 'Touch device without Vibration API detected (e.g. Firefox Android v129+). Switch-based fallback active.'
 			};
 		}
 
@@ -247,6 +260,29 @@
 		return getPatternByName(preset);
 	}
 
+	function getCurrentRuleIntensity() {
+		var slider = $('#demo-intensity');
+		return slider ? parseFloat(slider.value) : 0.7;
+	}
+
+	function updateIntensityFromPreset() {
+		var preset = $('#demo-preset').value;
+		var slider = $('#demo-intensity');
+		var label = $('#demo-intensity-value');
+		var intensity;
+
+		if (!slider) {
+			return;
+		}
+
+		intensity = getIntensityByName(preset);
+		slider.value = intensity;
+
+		if (label) {
+			label.textContent = Math.round(intensity * 100) + '%';
+		}
+	}
+
 	function getSandboxMatches(selector) {
 		var sandbox = $('#demo-sandbox');
 
@@ -265,7 +301,8 @@
 		var effectivePattern = getEffectivePattern(pattern);
 		var duration = totalDuration(effectivePattern);
 		var debugMode = $('#demo-debug-mode').checked;
-		var supported = Haptic && typeof Haptic.vibrate === 'function' && Haptic.vibrate(effectivePattern);
+		var intensity = options && typeof options.intensity === 'number' ? options.intensity : undefined;
+		var supported = Haptic && typeof Haptic.vibrate === 'function' && Haptic.vibrate(effectivePattern, intensity);
 		var describedPattern = describeEffectivePattern(pattern, effectivePattern);
 
 		options = options || {};
@@ -312,14 +349,28 @@
 	}
 
 	function initRuleDemo() {
-		$('#demo-preset').addEventListener('change', updateRulePreview);
+		$('#demo-preset').addEventListener('change', function () {
+			updateIntensityFromPreset();
+			updateRulePreview();
+		});
 		$('#demo-custom-pattern').addEventListener('input', updateRulePreview);
 		$('#demo-selector').addEventListener('input', updateRulePreview);
+
+		var intensitySlider = $('#demo-intensity');
+		var intensityLabel = $('#demo-intensity-value');
+		if (intensitySlider) {
+			intensitySlider.addEventListener('input', function () {
+				if (intensityLabel) {
+					intensityLabel.textContent = Math.round(parseFloat(this.value) * 100) + '%';
+				}
+			});
+		}
 
 		bindPressInteraction($('#demo-rule-test'), function () {
 			var selector = $('#demo-selector').value.trim();
 			var matches = getSandboxMatches(selector);
 			var pattern = getCurrentRulePattern();
+			var intensity = getCurrentRuleIntensity();
 			var describedPattern = describeEffectivePattern(pattern, getEffectivePattern(pattern));
 
 			if (matches === null) {
@@ -328,11 +379,12 @@
 			}
 
 			triggerPattern(pattern, {
+				intensity: intensity,
 				primaryTarget: $('#demo-rule-test'),
 				targets: matches || [],
 				statusMessage: matches && matches.length
-					? 'Tested ' + describedPattern + ' against ' + matches.length + ' matching sandbox element' + (matches.length === 1 ? '' : 's') + '.'
-					: 'Tested ' + describedPattern + '. No current sandbox elements match this selector.'
+					? 'Tested ' + describedPattern + ' @ ' + Math.round(intensity * 100) + '% against ' + matches.length + ' matching sandbox element' + (matches.length === 1 ? '' : 's') + '.'
+					: 'Tested ' + describedPattern + ' @ ' + Math.round(intensity * 100) + '%. No current sandbox elements match this selector.'
 			});
 		});
 	}
@@ -344,6 +396,7 @@
 				var selector = $('#demo-selector').value.trim();
 				var matches = getSandboxMatches(selector);
 				var pattern = getCurrentRulePattern();
+				var intensity = getCurrentRuleIntensity();
 
 				if (!Array.isArray(matches) || matches.indexOf(target) === -1) {
 					setStatus('is-info', 'This sample element does not match the current selector rule.');
@@ -352,8 +405,9 @@
 				}
 
 				triggerPattern(pattern, {
+					intensity: intensity,
 					primaryTarget: target,
-					statusMessage: 'This element matches ' + selector + ' and fired ' + describeEffectivePattern(pattern, getEffectivePattern(pattern)) + '.'
+					statusMessage: 'This element matches ' + selector + ' and fired ' + describeEffectivePattern(pattern, getEffectivePattern(pattern)) + ' @ ' + Math.round(intensity * 100) + '%.'
 				});
 			});
 		});
@@ -366,21 +420,45 @@
 		});
 
 		$('#demo-tester-preset').addEventListener('change', function () {
+			var testerIntensitySlider = $('#demo-tester-intensity');
+			var testerIntensityLabel = $('#demo-tester-intensity-value');
+			var intensity = getIntensityByName(this.value);
+
 			$('#demo-tester-custom-wrap').classList.toggle('haptic-hidden', this.value !== 'custom');
+
+			if (testerIntensitySlider) {
+				testerIntensitySlider.value = intensity;
+			}
+			if (testerIntensityLabel) {
+				testerIntensityLabel.textContent = Math.round(intensity * 100) + '%';
+			}
 		});
+
+		var testerIntensitySlider = $('#demo-tester-intensity');
+		var testerIntensityLabel = $('#demo-tester-intensity-value');
+		if (testerIntensitySlider) {
+			testerIntensitySlider.addEventListener('input', function () {
+				if (testerIntensityLabel) {
+					testerIntensityLabel.textContent = Math.round(parseFloat(this.value) * 100) + '%';
+				}
+			});
+		}
 
 		bindPressInteraction($('#demo-tester-btn'), function () {
 			var preset = $('#demo-tester-preset').value;
 			var pattern = preset === 'custom' ? parsePatternString($('#demo-tester-custom').value) : getPatternByName(preset);
+			var testerSlider = $('#demo-tester-intensity');
+			var intensity = testerSlider ? parseFloat(testerSlider.value) : getIntensityByName(preset);
 			var testerStatus = $('#demo-tester-status');
 			var describedPattern = describeEffectivePattern(pattern, getEffectivePattern(pattern));
 
 			triggerPattern(pattern, {
+				intensity: intensity,
 				primaryTarget: $('#demo-tester-btn')
 			});
 
 			testerStatus.className = 'haptic-tester-status is-info';
-			testerStatus.textContent = 'Tester preview: ' + describedPattern;
+			testerStatus.textContent = 'Tester preview: ' + describedPattern + ' @ ' + Math.round(intensity * 100) + '%';
 
 			window.setTimeout(function () {
 				testerStatus.className = 'haptic-tester-status';
@@ -392,6 +470,7 @@
 	initRuleDemo();
 	initSandbox();
 	initSidebarTester();
+	updateIntensityFromPreset();
 	updateRulePreview();
 
 	var support = describeSupport();

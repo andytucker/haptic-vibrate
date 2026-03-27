@@ -1030,3 +1030,38 @@ code {
 		padding-top: 0;
 	}
 }
+
+/* --- Intensity slider --- */
+
+.haptic-field--intensity {
+	flex: 1 1 auto;
+}
+
+.haptic-field__range-wrap {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.haptic-range {
+	flex: 1 1 auto;
+	accent-color: var(--haptic-primary);
+	height: 6px;
+	cursor: pointer;
+}
+
+.haptic-range__value {
+	flex: 0 0 auto;
+	min-width: 3.2em;
+	font-size: 0.82rem;
+	font-weight: 700;
+	color: var(--haptic-text-muted);
+	text-align: right;
+}
+
+.haptic-rule__row--intensity {
+	display: flex;
+	align-items: flex-end;
+	gap: 14px;
+	padding-top: 4px;
+}

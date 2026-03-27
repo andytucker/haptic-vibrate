@@ -8,9 +8,10 @@
 
 - 🎯 **CSS-selector rules** — Map any CSS selector to a vibration pattern
 - 🏷️ **Pattern classes** — Every rule gets an auto-generated class like `.haptic-vibrate-heartbeat`
-- ⚡ **15 built-in presets** — Light, Medium, Heavy, Single Short, Double Tap, Heartbeat, SOS, Success, Warning, Error, and more
+- ⚡ **19 built-in presets** — Aligned to Apple Human Interface Guidelines (UIImpactFeedbackGenerator, UINotificationFeedbackGenerator, UISelectionFeedbackGenerator)
+- 🎚️ **Per-rule intensity** — Slider from 0–1 with preset-based defaults; iOS uses PWM modulation for variable weight
 - 🛠 **Custom patterns** — Enter any comma-separated millisecond sequence
-- 📱 **Cross-platform haptics** — Android uses the Vibration API; iOS Safari 17.4+ uses a switch-based haptic fallback
+- 📱 **Cross-platform haptics** — Android Vibration API, iOS Safari 17.4+ PWM intensity, Firefox Android v129+ switch fallback
 - 🖥 **Desktop debug mode** — Visual ripple + audio beep on browsers without haptic support
 - 👆 **Automatic interaction listening** — Rules respond to pointer, touch, click, and keyboard activation automatically
 - ↕️ **Drag-and-drop rule ordering**
@@ -64,31 +65,35 @@ Enable **Desktop Debug Mode** in the sidebar to get feedback on desktop browsers
 ### Mobile Platform Support
 
 - **Android / WebView** — uses the native browser Vibration API for raw pattern playback
-- **iOS Safari 17.4+** — uses a browser-haptic-style switch fallback for pulse-based haptic feedback when the Vibration API is unavailable
+- **iOS Safari 17.4+** — uses PWM-modulated switch haptics that map intensity to toggle frequency, producing light-to-heavy feedback weights aligned with Apple’s UIImpactFeedbackGenerator
+- **Firefox Android v129+** — automatic switch-based fallback for devices that dropped the Vibration API
 - **Desktop browsers** — can use the plugin's debug mode for audio + visual confirmation during testing
 
 ---
 
 ## Built-in Presets
 
-| Key | Pattern (ms) | Description |
-|---|---|---|
-| `light` | `10` | Very short tap |
-| `medium` | `20` | Medium tap |
-| `heavy` | `40` | Strong tap |
-| `single_short` | `200` | Quick tap |
-| `single_long` | `600` | Long buzz |
-| `double_tap` | `100, 60, 100` | Two quick taps |
-| `triple_tap` | `100, 60, 100, 60, 100` | Three quick taps |
-| `heartbeat` | `100, 100, 300, 600` | Heartbeat rhythm |
-| `buzz` | `500` | Half-second buzz |
-| `rumble` | `200, 100, 200, 100, 200` | Triple rumble |
-| `notification` | `50, 50, 100` | Gentle notification |
-| `success` | `100, 50, 200` | Success confirmation |
-| `warning` | `30, 30, 30` | Triple warning tap |
-| `error` | `300, 100, 300, 100, 300` | Error alert |
-| `sos` | Morse SOS | Emergency pattern |
-| `custom` | user-defined | Your own pattern |
+| Key | Pattern (ms) | Intensity | HIG Mapping |
+|---|---|---|---|
+| `light` | `10` | 0.4 | UIImpactFeedbackGenerator .light |
+| `medium` | `20` | 0.7 | UIImpactFeedbackGenerator .medium |
+| `heavy` | `40` | 1.0 | UIImpactFeedbackGenerator .heavy |
+| `soft` | `10` | 0.3 | UIImpactFeedbackGenerator .soft |
+| `rigid` | `20` | 0.9 | UIImpactFeedbackGenerator .rigid |
+| `selection` | `8` | 0.25 | UISelectionFeedbackGenerator |
+| `single_short` | `200` | 0.7 | — |
+| `single_long` | `600` | 0.7 | — |
+| `double_tap` | `100, 60, 100` | 0.7 | — |
+| `triple_tap` | `100, 60, 100, 60, 100` | 0.7 | — |
+| `heartbeat` | `100, 100, 300, 600` | 0.7 | — |
+| `buzz` | `500` | 0.7 | — |
+| `rumble` | `200, 100, 200, 100, 200` | 0.7 | — |
+| `notification` | `50, 50, 100` | 0.7 | — |
+| `success` | `100, 50, 200` | 0.6 | UINotificationFeedbackGenerator .success |
+| `warning` | `30, 30, 30` | 0.8 | UINotificationFeedbackGenerator .warning |
+| `error` | `300, 100, 300, 100, 300` | 1.0 | UINotificationFeedbackGenerator .error |
+| `sos` | Morse SOS | 0.7 | — |
+| `custom` | user-defined | adjustable | — |
 
 ---
 

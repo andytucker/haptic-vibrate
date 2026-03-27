@@ -2,7 +2,17 @@
 
 All notable changes to `Haptic Vibrate` will be documented in this file.
 
-## [Unreleased]
+## [1.1.0] - 2026-03-27
+
+### Added
+
+- PWM intensity modulation for iOS Safari — `requestAnimationFrame`-based toggle loop varies switch interval from 16 ms (full) to 200 ms (off) for granular haptic weight.
+- Per-rule intensity slider (0–1, step 0.05) in the admin UI, with automatic sync to preset defaults.
+- Three new Apple HIG-aligned presets: **Soft** (0.3), **Rigid** (0.9), **Selection** (0.25).
+- All presets now carry an `intensity` value mapped to Apple UIImpactFeedbackGenerator / UINotificationFeedbackGenerator / UISelectionFeedbackGenerator weights.
+- Firefox Android v129+ fallback — detects touch devices that dropped the Vibration API and uses switch-based haptics.
+- Persistent iOS switch element — created once and reused, eliminating per-pulse DOM creation overhead.
+- Updated GitHub Pages demo with intensity slider, new preset buttons, and iOS/Firefox platform detection.
 
 ### Changed
 

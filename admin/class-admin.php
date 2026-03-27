@@ -51,22 +51,25 @@ class Haptic_Vibrate_Admin {
 	 * @var    array
 	 */
 	public static $presets = array(
-		'light'         => array( 'label' => 'Light',         'pattern' => array( 10 ) ),
-		'medium'        => array( 'label' => 'Medium',        'pattern' => array( 20 ) ),
-		'heavy'         => array( 'label' => 'Heavy',         'pattern' => array( 40 ) ),
-		'single_short'  => array( 'label' => 'Single Short',  'pattern' => array( 200 ) ),
-		'single_long'   => array( 'label' => 'Single Long',   'pattern' => array( 600 ) ),
-		'double_tap'    => array( 'label' => 'Double Tap',    'pattern' => array( 100, 60, 100 ) ),
-		'triple_tap'    => array( 'label' => 'Triple Tap',    'pattern' => array( 100, 60, 100, 60, 100 ) ),
-		'heartbeat'     => array( 'label' => 'Heartbeat',     'pattern' => array( 100, 100, 300, 600 ) ),
-		'buzz'          => array( 'label' => 'Buzz',          'pattern' => array( 500 ) ),
-		'rumble'        => array( 'label' => 'Rumble',        'pattern' => array( 200, 100, 200, 100, 200 ) ),
-		'sos'           => array( 'label' => 'SOS',           'pattern' => array( 100, 30, 100, 30, 100, 200, 200, 30, 200, 30, 200, 200, 100, 30, 100, 30, 100 ) ),
-		'notification'  => array( 'label' => 'Notification',  'pattern' => array( 50, 50, 100 ) ),
-		'success'       => array( 'label' => 'Success',       'pattern' => array( 100, 50, 200 ) ),
-		'warning'       => array( 'label' => 'Warning',       'pattern' => array( 30, 30, 30 ) ),
-		'error'         => array( 'label' => 'Error',         'pattern' => array( 300, 100, 300, 100, 300 ) ),
-		'custom'        => array( 'label' => 'Custom…',       'pattern' => array() ),
+		'light'         => array( 'label' => 'Light',         'pattern' => array( 10 ),                                    'intensity' => 0.4 ),
+		'medium'        => array( 'label' => 'Medium',        'pattern' => array( 20 ),                                    'intensity' => 0.7 ),
+		'heavy'         => array( 'label' => 'Heavy',         'pattern' => array( 40 ),                                    'intensity' => 1.0 ),
+		'soft'          => array( 'label' => 'Soft',          'pattern' => array( 10 ),                                    'intensity' => 0.3 ),
+		'rigid'         => array( 'label' => 'Rigid',         'pattern' => array( 20 ),                                    'intensity' => 0.9 ),
+		'selection'     => array( 'label' => 'Selection',     'pattern' => array( 8 ),                                     'intensity' => 0.25 ),
+		'single_short'  => array( 'label' => 'Single Short',  'pattern' => array( 200 ),                                   'intensity' => 0.7 ),
+		'single_long'   => array( 'label' => 'Single Long',   'pattern' => array( 600 ),                                   'intensity' => 0.7 ),
+		'double_tap'    => array( 'label' => 'Double Tap',    'pattern' => array( 100, 60, 100 ),                           'intensity' => 0.7 ),
+		'triple_tap'    => array( 'label' => 'Triple Tap',    'pattern' => array( 100, 60, 100, 60, 100 ),                  'intensity' => 0.7 ),
+		'heartbeat'     => array( 'label' => 'Heartbeat',     'pattern' => array( 100, 100, 300, 600 ),                     'intensity' => 0.7 ),
+		'buzz'          => array( 'label' => 'Buzz',          'pattern' => array( 500 ),                                    'intensity' => 0.8 ),
+		'rumble'        => array( 'label' => 'Rumble',        'pattern' => array( 200, 100, 200, 100, 200 ),                'intensity' => 0.9 ),
+		'sos'           => array( 'label' => 'SOS',           'pattern' => array( 100, 30, 100, 30, 100, 200, 200, 30, 200, 30, 200, 200, 100, 30, 100, 30, 100 ), 'intensity' => 0.7 ),
+		'notification'  => array( 'label' => 'Notification',  'pattern' => array( 50, 50, 100 ),                            'intensity' => 0.6 ),
+		'success'       => array( 'label' => 'Success',       'pattern' => array( 100, 50, 200 ),                           'intensity' => 0.6 ),
+		'warning'       => array( 'label' => 'Warning',       'pattern' => array( 30, 30, 30 ),                             'intensity' => 0.8 ),
+		'error'         => array( 'label' => 'Error',         'pattern' => array( 300, 100, 300, 100, 300 ),                'intensity' => 1.0 ),
+		'custom'        => array( 'label' => 'Custom…',       'pattern' => array(),                                         'intensity' => 0.7 ),
 	);
 
 	/**
@@ -203,6 +206,17 @@ class Haptic_Vibrate_Admin {
 				$selector      = isset( $rule['selector'] ) ? sanitize_text_field( $rule['selector'] ) : '';
 				$preset        = isset( $rule['preset'] ) ? sanitize_key( $rule['preset'] ) : 'single_short';
 				$custom_raw    = isset( $rule['custom_pattern'] ) ? sanitize_text_field( $rule['custom_pattern'] ) : '';
+				$intensity_raw = isset( $rule['intensity'] ) ? $rule['intensity'] : null;
+
+				// Resolve intensity: per-rule override → preset default → global default.
+				if ( null !== $intensity_raw && '' !== $intensity_raw ) {
+					$intensity = (float) $intensity_raw;
+					$intensity = max( 0.0, min( 1.0, $intensity ) );
+				} elseif ( isset( self::$presets[ $preset ]['intensity'] ) ) {
+					$intensity = (float) self::$presets[ $preset ]['intensity'];
+				} else {
+					$intensity = 0.7;
+				}
 
 				// Resolve the final pattern array.
 				if ( 'custom' === $preset ) {
@@ -222,6 +236,7 @@ class Haptic_Vibrate_Admin {
 					'preset'         => $preset,
 					'custom_pattern' => $custom_raw,
 					'pattern'        => $pattern,
+					'intensity'      => $intensity,
 					'class_name'     => $this->get_rule_class_name(
 						array(
 							'preset' => $preset,
@@ -334,6 +349,7 @@ class Haptic_Vibrate_Admin {
 		$selector       = isset( $haptic_vibrate_rule['selector'] ) ? $haptic_vibrate_rule['selector'] : '';
 		$preset         = isset( $haptic_vibrate_rule['preset'] ) ? $haptic_vibrate_rule['preset'] : 'single_short';
 		$custom_pattern = isset( $haptic_vibrate_rule['custom_pattern'] ) ? $haptic_vibrate_rule['custom_pattern'] : '';
+		$intensity      = isset( $haptic_vibrate_rule['intensity'] ) ? (float) $haptic_vibrate_rule['intensity'] : ( isset( self::$presets[ $preset ]['intensity'] ) ? (float) self::$presets[ $preset ]['intensity'] : 0.7 );
 		$opt            = self::OPTION_KEY;
 		$idx            = (string) $haptic_vibrate_index;
 		$custom_class   = 'custom' !== $preset ? ' haptic-hidden' : '';
@@ -393,6 +409,7 @@ class Haptic_Vibrate_Admin {
 								<option
 									value="<?php echo esc_attr( $haptic_vibrate_key ); ?>"
 									data-pattern="<?php echo esc_attr( implode( ',', $haptic_vibrate_preset['pattern'] ) ); ?>"
+									data-intensity="<?php echo esc_attr( $haptic_vibrate_preset['intensity'] ); ?>"
 									<?php selected( $preset, $haptic_vibrate_key ); ?>
 								>
 									<?php echo esc_html( $haptic_vibrate_preset['label'] ); ?>
@@ -425,6 +442,27 @@ class Haptic_Vibrate_Admin {
 						>
 							<span class="dashicons dashicons-controls-play"></span>
 						</button>
+					</div>
+				</div>
+
+				<!-- Row 3: intensity slider -->
+				<div class="haptic-rule__row haptic-rule__row--intensity">
+					<div class="haptic-field haptic-field--intensity">
+						<label class="haptic-field__label">
+							<?php esc_html_e( 'Intensity (iOS)', 'haptic-vibrate' ); ?>
+						</label>
+						<div class="haptic-field__range-wrap">
+							<input
+								type="range"
+								name="<?php echo esc_attr( $opt ); ?>[rules][<?php echo esc_attr( $idx ); ?>][intensity]"
+								value="<?php echo esc_attr( $intensity ); ?>"
+								class="haptic-range haptic-rule__intensity"
+								min="0"
+								max="1"
+								step="0.05"
+							/>
+							<span class="haptic-rule__intensity-value"><?php echo esc_html( round( $intensity * 100 ) ); ?>%</span>
+						</div>
 					</div>
 				</div>
 

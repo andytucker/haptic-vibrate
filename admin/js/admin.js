@@ -91,12 +91,12 @@
 		} );
 	}
 
-	function triggerPattern( pattern, debugMode, $elements ) {
+	function triggerPattern( pattern, debugMode, $elements, intensity ) {
 		var effectivePattern = getEffectivePattern( pattern );
 
 		if ( effectivePattern.length === 0 ) { return; }
 
-		if ( Haptic && Haptic.vibrate( effectivePattern ) ) {
+		if ( Haptic && Haptic.vibrate( effectivePattern, intensity ) ) {
 			return;
 		}
 
@@ -192,6 +192,34 @@
 		return [ 200 ];
 	}
 
+	function resolveRowIntensity( $row ) {
+		var $slider = $row.find( '.haptic-rule__intensity' );
+		if ( $slider.length ) {
+			return parseFloat( $slider.val() ) || 0.7;
+		}
+		return 0.7;
+	}
+
+	function updateIntensityFromPreset( $row ) {
+		var preset = $row.find( '.haptic-rule__preset' ).val();
+		var $slider = $row.find( '.haptic-rule__intensity' );
+		var $label  = $row.find( '.haptic-rule__intensity-value' );
+		var intensity;
+
+		if ( hapticVibrateAdmin.presets[ preset ] && typeof hapticVibrateAdmin.presets[ preset ].intensity === 'number' ) {
+			intensity = hapticVibrateAdmin.presets[ preset ].intensity;
+		} else {
+			intensity = 0.7;
+		}
+
+		if ( $slider.length ) {
+			$slider.val( intensity );
+		}
+		if ( $label.length ) {
+			$label.text( Math.round( intensity * 100 ) + '%' );
+		}
+	}
+
 	function refreshRowBadge( $row ) {
 		var pattern = getEffectivePattern( resolveRowPattern( $row ) );
 		var $wrap   = $row.find( '.haptic-rule__preset' ).closest( '.haptic-field--preset' );
@@ -237,6 +265,7 @@
 			var preset  = $( this ).val();
 			var $custom = $row.find( '.haptic-field--custom' );
 			$custom.toggleClass( 'haptic-hidden', preset !== 'custom' );
+			updateIntensityFromPreset( $row );
 			refreshRowBadge( $row );
 		} );
 
@@ -246,6 +275,11 @@
 
 		$row.on( 'change input', '.haptic-rule__selector', function () {
 			refreshClassPreview( $row );
+		} );
+
+		$row.on( 'input', '.haptic-rule__intensity', function () {
+			var val = parseFloat( $( this ).val() ) || 0;
+			$row.find( '.haptic-rule__intensity-value' ).text( Math.round( val * 100 ) + '%' );
 		} );
 
 		$row.on( 'click', '.haptic-rule__remove-btn', function () {
@@ -258,9 +292,10 @@
 
 		$row.on( 'click', '.haptic-rule__test-btn', function () {
 			var pattern   = resolveRowPattern( $row );
+			var intensity = resolveRowIntensity( $row );
 			var debugMode = $( '#haptic-debug-mode' ).is( ':checked' );
 
-			triggerPattern( pattern, debugMode, $( this ) );
+			triggerPattern( pattern, debugMode, $( this ), intensity );
 			showInlineFeedback( $row, pattern );
 		} );
 	}
@@ -370,7 +405,7 @@
 		var effectivePattern = getEffectivePattern( pattern );
 		var describedPattern = describeEffectivePattern( pattern, effectivePattern );
 
-		if ( Haptic && Haptic.vibrate( effectivePattern ) ) {
+		if ( Haptic && Haptic.vibrate( effectivePattern, undefined ) ) {
 			$status.removeClass( 'is-error is-info' ).addClass( 'is-success' ).text( '✓ Haptic fired: ' + describedPattern );
 		} else if ( debugMode ) {
 			playDebugAudio( effectivePattern );

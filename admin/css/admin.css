@@ -184,6 +184,35 @@
 .haptic-field--custom        { flex: 1 1 160px; }
 .haptic-field--class-preview { flex: 0 1 260px; min-width: 220px; }
 .haptic-field--test          { flex: 0 0 42px; }
+.haptic-field--intensity     { flex: 1 1 auto; min-width: 180px; }
+
+.haptic-rule__row--intensity {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	align-items: center;
+}
+
+.haptic-field__range-wrap {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.haptic-range {
+	flex: 1 1 auto;
+	min-width: 100px;
+	accent-color: var(--haptic-primary);
+	cursor: pointer;
+}
+
+.haptic-rule__intensity-value {
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: var(--haptic-primary);
+	min-width: 36px;
+	text-align: right;
+}
 
 .haptic-field__label {
 	font-size: 0.8rem;

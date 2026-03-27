@@ -113,9 +113,12 @@ class Haptic_Vibrate_Public {
 
 				$selectors[] = '.' . $this->get_rule_class_name( $rule, $index );
 
+				$intensity = isset( $rule['intensity'] ) ? (float) $rule['intensity'] : 0.7;
+
 				return array(
 					'selectors' => $selectors,
 					'pattern'   => isset( $rule['pattern'] ) ? array_map( 'absint', $rule['pattern'] ) : array( 200 ),
+					'intensity' => max( 0.0, min( 1.0, $intensity ) ),
 				);
 			},
 			(array) $settings['rules'],

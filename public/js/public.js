@@ -89,12 +89,12 @@
 	 * @param {Element}  el      The element that was interacted with.
 	 * @param {number[]} pattern The vibration pattern.
 	 */
-	function triggerHaptic( el, pattern ) {
+	function triggerHaptic( el, pattern, intensity ) {
 		var effectivePattern = getEffectivePattern( pattern );
 
 		if ( ! effectivePattern || effectivePattern.length === 0 ) { return; }
 
-		if ( Haptic && Haptic.vibrate( effectivePattern ) ) {
+		if ( Haptic && Haptic.vibrate( effectivePattern, intensity ) ) {
 			return;
 		}
 
@@ -171,7 +171,7 @@
 		}
 
 		markInteraction( event );
-		triggerHaptic( match.element, match.rule.pattern || [ 200 ] );
+		triggerHaptic( match.element, match.rule.pattern || [ 200 ], match.rule.intensity );
 	}
 
 	if ( window.PointerEvent ) {

@@ -204,14 +204,14 @@
 		if (typeof Haptic.hasIOSHapticFallback === 'function' && Haptic.hasIOSHapticFallback()) {
 			return {
 				kind: 'is-success',
-				message: 'iOS Safari PWM fallback detected. Intensity slider controls haptic weight via toggle frequency modulation.'
+				message: 'iOS Safari haptic fallback detected. Tap the test buttons to feel the switch-based haptic pulse.'
 			};
 		}
 
 		if (typeof Haptic.isSupported === 'function' && Haptic.isSupported()) {
 			return {
 				kind: 'is-info',
-				message: 'Touch device without Vibration API detected (e.g. Firefox Android v129+). Switch-based fallback active.'
+				message: 'Haptic support detected on this device. Tap the test buttons to try it.'
 			};
 		}
 

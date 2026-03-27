@@ -26,15 +26,10 @@
 	var DEFAULT_INTENSITY = 0.7;
 	var pendingTimeouts = [];
 	var lastIOSFallbackAt = 0;
-	var iosSwitch = null;
-	var iosSwitchLabel = null;
-	var pwmRafId = null;
 	var MAX_SEGMENTS = 12;
 	var MAX_SEGMENT_MS = 1000;
 	var MAX_TOTAL_MS = 5000;
 	var IOS_MIN_GAP_MS = 60;
-	var PWM_TOGGLE_MIN = 16;
-	var PWM_TOGGLE_MAX = 184;
 
 	function hasDOM() {
 		return !!(document && document.body);
@@ -146,11 +141,6 @@
 	function cancel() {
 		clearPendingTimeouts();
 
-		if (pwmRafId) {
-			cancelAnimationFrame(pwmRafId);
-			pwmRafId = null;
-		}
-
 		if (hasVibrationAPI()) {
 			try {
 				navigator.vibrate(0);
@@ -160,36 +150,10 @@
 		}
 	}
 
-	function ensureIOSSwitch() {
-		if (iosSwitch && iosSwitchLabel && iosSwitchLabel.parentNode) {
-			return true;
-		}
-
-		if (!hasDOM()) {
-			return false;
-		}
-
-		try {
-			iosSwitchLabel = document.createElement('label');
-			iosSwitchLabel.setAttribute('aria-hidden', 'true');
-			iosSwitchLabel.style.cssText = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0;opacity:0;pointer-events:none;';
-
-			iosSwitch = document.createElement('input');
-			iosSwitch.type = 'checkbox';
-			iosSwitch.setAttribute('switch', '');
-
-			iosSwitchLabel.appendChild(iosSwitch);
-			document.body.appendChild(iosSwitchLabel);
-			return true;
-		} catch (error) {
-			iosSwitch = null;
-			iosSwitchLabel = null;
-			return false;
-		}
-	}
-
 	function fireIOSSwitch() {
 		var now = Date.now();
+		var label;
+		var input;
 
 		if (!hasIOSHapticFallback()) {
 			return false;
@@ -201,79 +165,37 @@
 
 		lastIOSFallbackAt = now;
 
-		if (!ensureIOSSwitch()) {
-			return false;
-		}
-
 		try {
-			if (typeof iosSwitch.click === 'function') {
-				iosSwitch.click();
-			} else if (typeof iosSwitchLabel.click === 'function') {
-				iosSwitchLabel.click();
+			label = document.createElement('label');
+			label.setAttribute('aria-hidden', 'true');
+			label.style.cssText = 'position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0;opacity:0;pointer-events:none;';
+
+			input = document.createElement('input');
+			input.type = 'checkbox';
+			input.setAttribute('switch', '');
+
+			label.appendChild(input);
+			document.body.appendChild(label);
+
+			if (typeof input.click === 'function') {
+				input.click();
+			} else if (typeof label.click === 'function') {
+				label.click();
 			}
+
+			document.body.removeChild(label);
 			return true;
 		} catch (error) {
+			if (label && label.parentNode) {
+				label.parentNode.removeChild(label);
+			}
+
 			return false;
 		}
 	}
 
-	/**
-	 * PWM intensity modulation for iOS.
-	 *
-	 * Toggles the switch element at a rate proportional to the desired intensity.
-	 * Higher intensity = shorter interval between toggles = more haptic clicks
-	 * per unit time = perceived heavier vibration.
-	 *
-	 * @param {number} durationMs Total duration of this vibration segment.
-	 * @param {number} intensity  0-1, where 1 is maximum haptic strength.
-	 */
-	function fireIOSWithIntensity(durationMs, intensity) {
-		var clampedIntensity = Math.max(0, Math.min(1, intensity));
-		var toggleInterval = PWM_TOGGLE_MIN + PWM_TOGGLE_MAX * (1 - clampedIntensity);
-		var startTime;
-		var lastToggleTime = 0;
-
-		if (!ensureIOSSwitch()) {
-			return false;
-		}
-
-		if (pwmRafId) {
-			cancelAnimationFrame(pwmRafId);
-			pwmRafId = null;
-		}
-
-		startTime = performance.now();
-		lastToggleTime = 0;
-
-		function tick(now) {
-			var elapsed = now - startTime;
-			var sinceLast = now - lastToggleTime;
-
-			if (elapsed >= durationMs) {
-				pwmRafId = null;
-				return;
-			}
-
-			if (sinceLast >= toggleInterval) {
-				lastToggleTime = now;
-				try {
-					iosSwitch.click();
-				} catch (e) {
-					pwmRafId = null;
-					return;
-				}
-			}
-
-			pwmRafId = requestAnimationFrame(tick);
-		}
-
-		pwmRafId = requestAnimationFrame(tick);
-		return true;
-	}
-
-	function playIOSPattern(pattern, intensity) {
+	function playIOSPattern(pattern) {
 		var normalized = normalizePattern(pattern);
-		var effectiveIntensity = typeof intensity === 'number' ? intensity : DEFAULT_INTENSITY;
 		var delay = 0;
 		var pulseCount = 0;
 		var i;
@@ -285,24 +207,10 @@
 			var pauseMs = normalized[i + 1] || 0;
 
 			if (vibrateMs > 0) {
-				if (vibrateMs >= PWM_TOGGLE_MIN * 3) {
-					// Long enough segment for PWM modulation.
-					(function (d, ms, inten) {
-						if (0 === d) {
-							fireIOSWithIntensity(ms, inten);
-						} else {
-							pendingTimeouts.push(window.setTimeout(function () {
-								fireIOSWithIntensity(ms, inten);
-							}, d));
-						}
-					})(delay, vibrateMs, effectiveIntensity);
+				if (0 === delay) {
+					fireIOSSwitch();
 				} else {
-					// Very short segment — single click is sufficient.
-					if (0 === delay) {
-						fireIOSSwitch();
-					} else {
-						pendingTimeouts.push(window.setTimeout(fireIOSSwitch, delay));
-					}
+					pendingTimeouts.push(window.setTimeout(fireIOSSwitch, delay));
 				}
 				pulseCount++;
 			}
@@ -313,20 +221,8 @@
 		return pulseCount > 0;
 	}
 
-	/**
-	 * Detect touch-capable non-iOS devices where Vibration API is absent.
-	 * Covers Firefox Android v129+ which dropped the API.
-	 */
-	function isTouchDeviceWithoutVibration() {
-		if (hasVibrationAPI() || isIOSDevice()) {
-			return false;
-		}
-		return 'ontouchstart' in window || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
-	}
-
 	function vibrate(pattern, intensity) {
 		var normalized = normalizePattern(pattern);
-		var effectiveIntensity = typeof intensity === 'number' ? intensity : DEFAULT_INTENSITY;
 
 		cancel();
 
@@ -340,14 +236,7 @@
 		}
 
 		if (hasIOSHapticFallback()) {
-			return playIOSPattern(normalized, effectiveIntensity);
-		}
-
-		// Firefox Android v129+ and similar: attempt switch fallback on touch devices.
-		if (isTouchDeviceWithoutVibration() && hasDOM()) {
-			if (ensureIOSSwitch()) {
-				return playIOSPattern(normalized, effectiveIntensity);
-			}
+			return playIOSPattern(normalized);
 		}
 
 		return false;
@@ -390,7 +279,7 @@
 	}
 
 	function isSupported() {
-		return hasVibrationAPI() || hasIOSHapticFallback() || isTouchDeviceWithoutVibration();
+		return hasVibrationAPI() || hasIOSHapticFallback();
 	}
 
 	window.WPHapticCore = {

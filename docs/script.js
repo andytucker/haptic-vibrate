@@ -6,21 +6,24 @@
 	var PRESS_DEBOUNCE_MS = 450;
 	var CLASS_PREFIX = 'haptic-vibrate-';
 	var PRESETS = {
-		light: [10],
-		medium: [20],
-		heavy: [40],
-		single_short: [200],
-		single_long: [600],
-		double_tap: [100, 60, 100],
-		triple_tap: [100, 60, 100, 60, 100],
-		heartbeat: [100, 100, 300, 600],
-		buzz: [500],
-		rumble: [200, 100, 200, 100, 200],
-		notification: [50, 50, 100],
-		success: [100, 50, 200],
-		warning: [30, 30, 30],
-		error: [300, 100, 300, 100, 300],
-		custom: []
+		light:        { pattern: [10],                          intensity: 0.4  },
+		medium:       { pattern: [20],                          intensity: 0.7  },
+		heavy:        { pattern: [40],                          intensity: 1.0  },
+		soft:         { pattern: [10],                          intensity: 0.3  },
+		rigid:        { pattern: [20],                          intensity: 0.9  },
+		selection:    { pattern: [8],                           intensity: 0.25 },
+		single_short: { pattern: [200],                         intensity: 0.7  },
+		single_long:  { pattern: [600],                         intensity: 0.7  },
+		double_tap:   { pattern: [100, 60, 100],                intensity: 0.7  },
+		triple_tap:   { pattern: [100, 60, 100, 60, 100],       intensity: 0.7  },
+		heartbeat:    { pattern: [100, 100, 300, 600],          intensity: 0.7  },
+		buzz:         { pattern: [500],                         intensity: 0.7  },
+		rumble:       { pattern: [200, 100, 200, 100, 200],     intensity: 0.7  },
+		notification: { pattern: [50, 50, 100],                 intensity: 0.7  },
+		success:      { pattern: [100, 50, 200],                intensity: 0.6  },
+		warning:      { pattern: [30, 30, 30],                  intensity: 0.8  },
+		error:        { pattern: [300, 100, 300, 100, 300],     intensity: 1.0  },
+		custom:       { pattern: [],                            intensity: 0.7  }
 	};
 	var audioContext = null;
 
